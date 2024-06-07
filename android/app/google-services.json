@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "122024196750",
+    "project_id": "ucsi-report",
+    "storage_bucket": "ucsi-report.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122024196750:android:c535b88a59185cd941e7df",
+        "android_client_info": {
+          "package_name": "com.example.bcp_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBELlsZq92Fu9RjP4tYS7F8A8rpgN0GjBM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
