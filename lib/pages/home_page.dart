@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:bcp_app/components/my_bottomnavbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String? userName;
+
+  const HomePage({super.key, required this.userName});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -26,8 +28,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(120),
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Text(
-                user?.email ?? '',
+                widget.userName ?? "User",
                 style: const TextStyle(
                   fontSize: 26,
                   color: Color.fromRGBO(191, 0, 7, 1),

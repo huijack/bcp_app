@@ -1,32 +1,138 @@
 import 'package:bcp_app/components/my_button.dart';
 import 'package:bcp_app/components/my_textfield.dart';
+import 'package:bcp_app/pages/auth_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class RegisterPage extends StatelessWidget {
-  RegisterPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   // text editing controller
   final fullnameController = TextEditingController();
+
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   final confirmpasswordController = TextEditingController();
 
   // register function
-  void registerUser() {
-    final fullname = fullnameController.text;
-    final email = emailController.text;
-    final password = passwordController.text;
-    final confirmpassword = confirmpasswordController.text;
+  void registerUser() async {
+    // show loading circle
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
 
-    if (fullname.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty ||
-        confirmpassword.isEmpty) {
+    // try creating the user
+    try {
+      // check if the passwords match
+      if (passwordController.text != confirmpasswordController.text) {
+        Navigator.pop(context);
+
+        // show error message
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Registration Error'),
+              content:
+                  const Text('Your passwords do not match. Please try again'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                )
+              ],
+            );
+          },
+        );
+
+        return;
+      }
+
+      // create the user in Firebase Auth
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      // get the user ID
+      String uid = userCredential.user!.uid;
+
+      // add the user to Firestore
+      await FirebaseFirestore.instance.collection('User').doc(uid).set({
+        'FullName': fullnameController.text,
+        'Email': emailController.text,
+        'uId': uid,
+        // you can add more fields here if needed
+      });
+
+      // hide loading circle
+      Navigator.pop(context);
+
+      // navigate the user to the home page
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => const AuthPage(),
+        ),
+        (route) => false,
+      );
+
+      // Show success dialog
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Registration Successful'),
+            content: const Text('Your account has been created successfully!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the success dialog
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      Navigator.pop(context);
+
       // show error message
-      return;
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Registration Error'),
+            content: const Text(
+                'An error occurred while registering your account. Please try again'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              )
+            ],
+          );
+        },
+      );
     }
-
-    // register user
   }
 
   @override
@@ -49,9 +155,9 @@ class RegisterPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-          
+
                 const SizedBox(height: 20),
-          
+
                 Text(
                   'Create your account. It\'s free!',
                   style: TextStyle(
@@ -60,9 +166,9 @@ class RegisterPage extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-          
+
                 const SizedBox(height: 30),
-          
+
                 // fullname input
                 MyTextField(
                   controller: fullnameController,
@@ -70,9 +176,9 @@ class RegisterPage extends StatelessWidget {
                   obscureText: false,
                   prefixIcon: Icons.person,
                 ),
-          
+
                 const SizedBox(height: 25),
-          
+
                 // email input
                 MyTextField(
                   controller: emailController,
@@ -80,9 +186,9 @@ class RegisterPage extends StatelessWidget {
                   obscureText: false,
                   prefixIcon: Icons.mail,
                 ),
-          
+
                 const SizedBox(height: 25),
-          
+
                 // password input
                 MyTextField(
                   controller: passwordController,
@@ -90,9 +196,9 @@ class RegisterPage extends StatelessWidget {
                   obscureText: true,
                   prefixIcon: Icons.lock,
                 ),
-          
+
                 const SizedBox(height: 25),
-          
+
                 // confirm password input
                 MyTextField(
                   controller: confirmpasswordController,
@@ -100,17 +206,17 @@ class RegisterPage extends StatelessWidget {
                   obscureText: true,
                   prefixIcon: Icons.lock,
                 ),
-          
+
                 const SizedBox(height: 35),
-          
+
                 // register button
                 MyButton(
                   buttonText: 'Sign Up',
                   onTap: registerUser,
                 ),
-          
+
                 const SizedBox(height: 15),
-          
+
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: const Row(
@@ -121,7 +227,8 @@ class RegisterPage extends StatelessWidget {
                         child: Text.rich(
                           TextSpan(
                             children: [
-                              TextSpan(text: 'By signing up, you agree to our '),
+                              TextSpan(
+                                  text: 'By signing up, you agree to our '),
                               TextSpan(
                                 text: 'Terms and Conditions',
                                 style: TextStyle(fontWeight: FontWeight.bold),
