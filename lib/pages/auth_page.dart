@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'home_loading_page.dart';
 import 'login_page.dart';
 
@@ -18,9 +18,9 @@ class _AuthPageState extends State<AuthPage> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasData) {
-            return HomePageLoader();  // Use the loader
+            return HomePageLoader(); // Use the loader
           } else {
             return LoginPage();
           }
@@ -29,3 +29,4 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 }
+

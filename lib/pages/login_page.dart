@@ -1,9 +1,10 @@
 import 'package:bcp_app/components/my_button.dart';
 import 'package:bcp_app/components/my_textfield.dart';
-import 'package:bcp_app/pages/register_page.dart';
+import 'package:bcp_app/pages/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
+import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -15,20 +16,36 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   // text editing controller
   final emailController = TextEditingController();
-
   final passwordController = TextEditingController();
 
   // sign in function
   void signUserIn() async {
+    bool isLoadingDialogVisible = false;
+
     // show loading circle
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
+    showLoadingDialog() {
+      if (mounted && !isLoadingDialogVisible) {
+        isLoadingDialogVisible = true;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
         );
-      },
-    );
+      }
+    }
+
+    hideLoadingDialog() {
+      if (isLoadingDialogVisible && mounted) {
+        Navigator.of(context).pop();
+        isLoadingDialogVisible = false;
+      }
+    }
+
+    showLoadingDialog();
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -36,35 +53,78 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text,
       );
 
-      // hide loading circle
+      // hide loading circle and navigate
+      hideLoadingDialog();
+
       if (mounted) {
-        Navigator.pop(context);
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const AuthPage(),
+          ),
+          (route) => false,
+        );
       }
-    } on FirebaseAuthException {
-      // hide loading circle
-      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      // hide loading circle and show error message
+      hideLoadingDialog();
+
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found for that email.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Wrong password provided for that user.';
+          break;
+        default:
+          errorMessage = 'An error occurred. Please try again.';
+      }
 
       // show error message
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Login Error'),
-            content: const Text('Your email or password is incorrect. Please try again'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('OK'),
-              )
-            ],
-          );
-        },
-      );
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Login Error'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      // hide loading circle and show generic error message
+      hideLoadingDialog();
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Login Error'),
+              content: const Text('An unexpected error occurred. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -73,28 +133,19 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: Center(
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-                // logo
-                const Icon(
-                  Icons.report,
-                  size: 150,
-                ),
-
+                const Icon(Icons.report, size: 150),
                 const SizedBox(height: 20),
-
-                // welcome text
                 const Text(
                   'Welcome to UCSI Report!',
                   style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromRGBO(191, 0, 7, 100)),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(191, 0, 6, 0.815),
+                  ),
                 ),
-
                 const SizedBox(height: 15),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Text(
@@ -107,55 +158,40 @@ class _LoginPageState extends State<LoginPage> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
-                // username input
                 MyTextField(
                   controller: emailController,
                   prefixIcon: Icons.mail,
                   hintText: 'Email',
                   obscureText: false,
                 ),
-
                 const SizedBox(height: 25),
-
-                // password input
                 MyTextField(
                   controller: passwordController,
                   prefixIcon: Icons.password,
                   hintText: 'Password',
                   obscureText: true,
                 ),
-
                 const SizedBox(height: 35),
-
-                // login button
                 MyButton(
                   buttonText: 'Sign In',
                   onTap: signUserIn,
                 ),
-
                 const SizedBox(height: 15),
-                // new user? register an account
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'New user?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
+                    Text('New user?', style: TextStyle(color: Colors.grey[700])),
                     const SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
-                        // navigate to register page
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => RegisterPage()),
+                              builder: (context) => const RegisterPage()),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Register an account',
                         style: TextStyle(
                           color: Colors.blue,
@@ -164,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),
