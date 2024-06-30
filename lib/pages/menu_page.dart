@@ -1,9 +1,11 @@
 import 'package:bcp_app/components/my_card.dart';
 import 'package:bcp_app/components/my_requestcounts.dart';
 import 'package:bcp_app/pages/submit_request_page.dart';
+import 'package:bcp_app/pages/view_request_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'track_status_page.dart';
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});
@@ -18,9 +20,20 @@ class MenuPage extends StatelessWidget {
     );
   }
 
-  void _trackRequestStatus() {}
+  void _trackRequestStatus(BuildContext context) {
+    // navigate to the track request status page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TrackRequestStatusPage(),
+      ),
+    );
+  }
 
-  void _viewPastRequests() {}
+  void _viewPastRequests(BuildContext context) {
+    // navigate to the view past requests page
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewPastRequestsPage() ));
+  }
 
   void _editProfile() {}
 
@@ -52,14 +65,14 @@ class MenuPage extends StatelessWidget {
                 MyCard(
                   icon: Icons.local_shipping_outlined,
                   text: "Track Request Status",
-                  onTap: _trackRequestStatus,
+                  onTap: () => _trackRequestStatus(context),
                 ),
 
                 // View Past Requests
                 MyCard(
                   icon: Icons.history,
                   text: "View Past Requests",
-                  onTap: _viewPastRequests,
+                  onTap: () => _viewPastRequests(context),
                 ),
 
                 // Edit Profile
