@@ -21,9 +21,9 @@ class RequestCountsCard extends StatelessWidget {
 
       for (var doc in querySnapshot.docs) {
         final status = doc['Status'];
-        if (status == 'pending') {
+        if (status == 'Pending') {
           pendingCount++;
-        } else if (status == 'fixed') {
+        } else if (status == 'Fixed') {
           fixedCount++;
         }
       }

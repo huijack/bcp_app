@@ -84,39 +84,53 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
       // get current user ID
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
-      if (userId == null) {
-        // Close loading dialog
-        Navigator.of(context).pop();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error: User is not authenticated.'),
-          ),
-        );
-        return;
-      }
-
       // Upload image to Firebase Storage
       String downloadURL = '';
       if (_hasImage && _pickedImage != null) {
         String fileName = basename(_pickedImage!.path);
         Reference ref = FirebaseStorage.instance
             .ref()
-            .child('images/$userId') // Add the user ID to the path
+            .child('images/$userId')
             .child(fileName);
         await ref.putFile(File(_pickedImage!.path));
         downloadURL = await ref.getDownloadURL();
       }
 
+      // Firestore reference
+      final firestore = FirebaseFirestore.instance;
+
+      // Firestore transaction to fetch and increment request ID
+      final DocumentReference counterDocRef =
+          firestore.collection('Counters').doc('requestCounter');
+
+      // Fetch and update latest request ID
+      int newRequestId = 10001;
+
+      await firestore.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(counterDocRef);
+
+        if (!snapshot.exists) {
+          // If the document doesn't exist, create it with the initial value
+          newRequestId = 10001;
+          transaction.set(counterDocRef, {'latestRequestId': newRequestId});
+        } else {
+          // Increment the request ID
+          int currentId = snapshot['latestRequestId'] ?? 10000;
+          newRequestId = currentId + 1;
+          transaction.update(counterDocRef, {'latestRequestId': newRequestId});
+        }
+      });
+
       // Add data to Firestore
-      await FirebaseFirestore.instance.collection('Request').add({
+      await firestore.collection('Request').add({
+        'Request ID': newRequestId,
         'Building': _selectedBuilding,
         'Equipment': _selectedEquipment,
         'Room No': roomNoController.text,
         'Issues': issueController.text,
         'Remarks': remarksController.text,
-        'Image URL': downloadURL, // Store the image URL in Firestore
-        'Status': 'pending',
+        'Image URL': downloadURL,
+        'Status': 'Pending',
         'uId': userId,
         'timestamp': FieldValue.serverTimestamp(),
       });
@@ -139,9 +153,10 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
         _selectedBuilding = null;
         _selectedEquipment = null;
         _hasImage = false;
-        _pickedImage = null; // Clear the image
+        _pickedImage = null;
       });
     } catch (error) {
+      
       // Close loading dialog
       Navigator.of(context).pop();
 
@@ -184,23 +199,23 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
                   hintText: 'Choose a building',
                   items: const [
                     DropdownMenuItem(
-                      value: 'blockA',
+                      value: 'Block A',
                       child: Text('Block A'),
                     ),
                     DropdownMenuItem(
-                      value: 'blockB',
+                      value: 'Block B',
                       child: Text('Block B'),
                     ),
                     DropdownMenuItem(
-                      value: 'blockC',
+                      value: 'Block C',
                       child: Text('Block C'),
                     ),
                     DropdownMenuItem(
-                      value: 'blockE',
+                      value: 'Block E',
                       child: Text('Block E'),
                     ),
                     DropdownMenuItem(
-                      value: 'blockG',
+                      value: 'Block G',
                       child: Text('Block G'),
                     ),
                   ],
