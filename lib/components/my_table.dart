@@ -15,7 +15,6 @@ class _MyTableState extends State<MyTable> {
   bool _isAscending = true;
 
   String formatDate(Timestamp timestamp) {
-    if (timestamp == null) return 'N/A';
     DateTime dateTime = timestamp.toDate();
     return DateFormat('yyyy-MM-dd').format(dateTime);
   }
