@@ -6,6 +6,7 @@ class MyTextField extends StatefulWidget {
   final IconData prefixIcon;
   final bool obscureText;
   final int? maxLines;
+  final bool? enabled;
 
   const MyTextField({
     super.key,
@@ -14,6 +15,7 @@ class MyTextField extends StatefulWidget {
     required this.obscureText,
     required this.prefixIcon,
     this.maxLines,
+    this.enabled,
   });
 
   @override
@@ -44,6 +46,7 @@ class MyTextFieldState extends State<MyTextField> {
           controller: widget.controller,
           obscureText: widget.obscureText ? _isObscure : false,
           maxLines: widget.obscureText ? 1 : widget.maxLines,
+          enabled: widget.enabled ?? true,
           decoration: InputDecoration(
             prefixIcon: Icon(widget.prefixIcon),
             suffixIcon: widget.obscureText

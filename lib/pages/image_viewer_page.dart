@@ -6,9 +6,7 @@ class ImageViewerPage extends StatelessWidget {
   final String userId;
   final String imageName;
 
-  const ImageViewerPage(
-      {Key? key, required this.userId, required this.imageName})
-      : super(key: key);
+  const ImageViewerPage({Key? key, required this.userId, required this.imageName}) : super(key: key);
 
   Future<String?> getImageUrl() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -50,59 +48,88 @@ class ImageViewerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[200],
-        scrolledUnderElevation: 0.0,
-      ),
-      body: FutureBuilder<String?>(
-        future: getImageUrl(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.data == 'unauthenticated') {
-            return const Center(
-              child: Text(
-                'You are not logged in. Please log in to view this image.',
-                textAlign: TextAlign.center,
-              ),
-            );
-          }
-          if (snapshot.data == 'unauthorized') {
-            return const Center(
-              child: Text(
-                'Unauthorized: You do not have permission to view this image.',
-                textAlign: TextAlign.center,
-              ),
-            );
-          }
-          if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(
-                child: Text('Failed to load image. Please try again later.'));
-          }
+      backgroundColor: Colors.black, // Set background color to black
+      body: SafeArea(
+        child: Stack(
+          children: [
+            FutureBuilder<String?>(
+              future: getImageUrl(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.data == 'unauthenticated') {
+                  return const Center(
+                    child: Text(
+                      'You are not logged in. Please log in to view this image.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
+                if (snapshot.data == 'unauthorized') {
+                  return const Center(
+                    child: Text(
+                      'Unauthorized: You do not have permission to view this image.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
+                if (snapshot.hasError || !snapshot.hasData) {
+                  return const Center(
+                    child: Text(
+                      'Failed to load image. Please try again later.',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
 
-          return Center(
-            child: Image.network(
-              snapshot.data!,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
                 return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
+                  child: Image.network(
+                    snapshot.data!,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(
+                        child: Text(
+                          'Failed to load image. Please check your internet connection.',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
-              errorBuilder: (context, error, stackTrace) {
-                return const Center(
-                    child: Text(
-                        'Failed to load image. Please check your internet connection.'));
-              },
             ),
-          );
-        },
+            Positioned(
+              top: 10.0,
+              right: 10.0,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black54,
+                  ),
+                  child: const Icon(Icons.close, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

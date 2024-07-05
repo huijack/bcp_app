@@ -77,8 +77,12 @@ class _RegisterPageState extends State<RegisterPage> {
       await FirebaseFirestore.instance.collection('User').doc(uid).set({
         'FullName': fullnameController.text,
         'Email': emailController.text,
+        'Phone': '',
+        'Address': '',
+        'Postcode': '',
+        'City': '',
+        'State': '',
         'uId': uid,
-        // you can add more fields here if needed
       });
 
       // hide loading circle
