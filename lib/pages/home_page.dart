@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:bcp_app/components/my_bottomnavbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'history_page.dart';
 import 'profile_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -34,9 +33,6 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     // Menu Page
     const MenuPage(),
-
-    // History Page
-    const HistoryPage(),
 
     // Profile Page
     const ProfilePage(),

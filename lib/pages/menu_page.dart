@@ -4,7 +4,7 @@ import 'package:bcp_app/pages/submit_request_page.dart';
 import 'package:bcp_app/pages/view_request_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'edit_profile_page.dart';
 import 'track_status_page.dart';
 
 class MenuPage extends StatelessWidget {
@@ -32,10 +32,23 @@ class MenuPage extends StatelessWidget {
 
   void _viewPastRequests(BuildContext context) {
     // navigate to the view past requests page
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewPastRequestsPage() ));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ViewPastRequestsPage(),
+      ),
+    );
   }
 
-  void _editProfile() {}
+  void _editProfile(BuildContext context) {
+    // navigate to the edit profile page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfilePage(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +65,8 @@ class MenuPage extends StatelessWidget {
               crossAxisSpacing: 15,
               mainAxisSpacing: 15,
               shrinkWrap: true, // Use shrinkWrap to take the natural size
-              physics: NeverScrollableScrollPhysics(), // Disable scrolling for GridView
+              physics:
+                  NeverScrollableScrollPhysics(), // Disable scrolling for GridView
               children: [
                 // Submit a Request
                 MyCard(
@@ -79,7 +93,7 @@ class MenuPage extends StatelessWidget {
                 MyCard(
                   icon: Icons.person_2_outlined,
                   text: "Edit Profile",
-                  onTap: _editProfile,
+                  onTap: () => _editProfile(context),
                 ),
               ],
             ),
