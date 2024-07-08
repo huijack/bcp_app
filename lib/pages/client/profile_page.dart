@@ -26,30 +26,37 @@ class ProfilePage extends StatelessWidget {
             return Center(child: Text('No user data found'));
           }
 
-          Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
+          Map<String, dynamic> userData =
+              snapshot.data!.data() as Map<String, dynamic>;
 
           return CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    SizedBox(height: 40),  // Add some top padding
-                    _buildProfileHeader(userData['FullName'] ?? 'N/A', userData['Email'] ?? 'N/A'),
-                    SizedBox(height: 20),  // Add space between header and cards
+                    SizedBox(height: 40), // Add some top padding
+                    _buildProfileHeader(userData['FullName'] ?? 'N/A',
+                        userData['Email'] ?? 'N/A'),
+                    SizedBox(height: 20), // Add space between header and cards
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildInfoCard('Phone', userData['Phone'] ?? 'N/A', Icons.phone),
+                          _buildInfoCard(
+                              'Phone', userData['Phone'] ?? 'N/A', Icons.phone),
                           SizedBox(height: 16),
-                          _buildInfoCard('Address', userData['Address'] ?? 'N/A', Icons.home),
+                          _buildInfoCard('Address',
+                              userData['Address'] ?? 'N/A', Icons.home),
                           SizedBox(height: 16),
-                          _buildInfoCard('Postcode', userData['Postcode'] ?? 'N/A', Icons.location_on),
+                          _buildInfoCard('Postcode',
+                              userData['Postcode'] ?? 'N/A', Icons.location_on),
                           SizedBox(height: 16),
-                          _buildInfoCard('City', userData['City'] ?? 'N/A', Icons.location_city),
+                          _buildInfoCard('City', userData['City'] ?? 'N/A',
+                              Icons.location_city),
                           SizedBox(height: 16),
-                          _buildInfoCard('State', userData['State'] ?? 'N/A', Icons.map),
+                          _buildInfoCard(
+                              'State', userData['State'] ?? 'N/A', Icons.map),
                         ],
                       ),
                     ),
@@ -88,6 +95,7 @@ class ProfilePage extends StatelessWidget {
   Widget _buildInfoCard(String title, String value, IconData icon) {
     return Card(
       elevation: 2,
+      color: Colors.white,
       child: ListTile(
         leading: Icon(icon, color: Colors.red[900]),
         title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),

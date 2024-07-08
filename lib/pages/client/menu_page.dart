@@ -1,7 +1,7 @@
 import 'package:bcp_app/components/my_card.dart';
 import 'package:bcp_app/components/my_requestcounts.dart';
-import 'package:bcp_app/pages/submit_request_page.dart';
-import 'package:bcp_app/pages/view_request_page.dart';
+import 'package:bcp_app/pages/client/submit_request_page.dart';
+import 'package:bcp_app/pages/client/view_request_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'edit_profile_page.dart';
