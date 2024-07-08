@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -7,6 +8,7 @@ class MyTextField extends StatefulWidget {
   final bool obscureText;
   final int? maxLines;
   final bool? enabled;
+  final bool allowNewLines;
 
   const MyTextField({
     super.key,
@@ -16,6 +18,7 @@ class MyTextField extends StatefulWidget {
     required this.prefixIcon,
     this.maxLines,
     this.enabled,
+    this.allowNewLines = true,
   });
 
   @override
@@ -47,6 +50,11 @@ class MyTextFieldState extends State<MyTextField> {
           obscureText: widget.obscureText ? _isObscure : false,
           maxLines: widget.obscureText ? 1 : widget.maxLines,
           enabled: widget.enabled ?? true,
+          keyboardType: widget.allowNewLines ? null : TextInputType.text,
+          textInputAction: widget.allowNewLines ? null : TextInputAction.done,
+          inputFormatters: widget.allowNewLines
+              ? null
+              : [FilteringTextInputFormatter.singleLineFormatter],
           decoration: InputDecoration(
             prefixIcon: Icon(widget.prefixIcon),
             suffixIcon: widget.obscureText

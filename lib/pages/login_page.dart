@@ -164,6 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                   prefixIcon: Icons.mail,
                   hintText: 'Email',
                   obscureText: false,
+                  allowNewLines: false,
                 ),
                 const SizedBox(height: 25),
                 MyTextField(

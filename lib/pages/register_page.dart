@@ -83,6 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'City': '',
         'State': '',
         'uId': uid,
+        'isAdmin': false,
       });
 
       // hide loading circle
@@ -179,6 +180,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: 'Full Name',
                   obscureText: false,
                   prefixIcon: Icons.person,
+                  allowNewLines: false,
                 ),
 
                 const SizedBox(height: 25),
@@ -189,6 +191,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   hintText: 'Email',
                   obscureText: false,
                   prefixIcon: Icons.mail,
+                  allowNewLines: false,
                 ),
 
                 const SizedBox(height: 25),

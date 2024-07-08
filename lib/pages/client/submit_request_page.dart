@@ -227,27 +227,27 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
                   hintText: "Choose an equipment",
                   items: const [
                     DropdownMenuItem(
-                      value: 'projector',
+                      value: 'Projector',
                       child: Text('Projector'),
                     ),
                     DropdownMenuItem(
-                      value: 'aircon',
+                      value: 'Aircon',
                       child: Text('Air Conditioner'),
                     ),
                     DropdownMenuItem(
-                      value: 'light',
+                      value: 'Light',
                       child: Text('Light'),
                     ),
                     DropdownMenuItem(
-                      value: 'fan',
+                      value: 'Fan',
                       child: Text('Fan'),
                     ),
                     DropdownMenuItem(
-                      value: 'door',
+                      value: 'Door',
                       child: Text('Door'),
                     ),
                     DropdownMenuItem(
-                      value: 'others',
+                      value: 'Others',
                       child: Text('Others'),
                     )
                   ],
