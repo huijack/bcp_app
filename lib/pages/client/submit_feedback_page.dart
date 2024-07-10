@@ -69,22 +69,21 @@ class _SubmitFeedbackPageState extends State<SubmitFeedbackPage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
         scrolledUnderElevation: 0.0,
+        centerTitle: true,
+        title: const Text(
+          'Submit Feedback',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color.fromRGBO(191, 0, 6, 0.815),
+          ),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Center(
-                child: Text(
-                  'We Value Your Feedback',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(191, 0, 6, 0.815),
-                  ),
-                ),
-              ),
               const SizedBox(height: 30),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25),

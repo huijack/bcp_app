@@ -60,7 +60,7 @@ class MyCard extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: Colors.red[900],
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(

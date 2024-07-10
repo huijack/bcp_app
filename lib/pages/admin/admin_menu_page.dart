@@ -4,14 +4,73 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bcp_app/components/my_card.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class AdminMenuPage extends StatelessWidget {
+import 'blockA_page.dart';
+import 'blockB_page.dart';
+import 'blockC_page.dart';
+import 'blockE_page.dart';
+import 'blockG_page.dart';
+
+class AdminMenuPage extends StatefulWidget {
   const AdminMenuPage({super.key});
 
-  void _blockA(BuildContext context) {}
-  void _blockB(BuildContext context) {}
-  void _blockC(BuildContext context) {}
-  void _blockE(BuildContext context) {}
-  void _blockG(BuildContext context) {}
+  @override
+  State<AdminMenuPage> createState() => _AdminMenuPageState();
+}
+
+class _AdminMenuPageState extends State<AdminMenuPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  void _blockA(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockAPage();
+        },
+      ),
+    );
+  }
+
+  void _blockB(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return BlockBPage();
+        },
+      ),
+    );
+  }
+
+  void _blockC(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockCPage();
+        },
+      ),
+    );
+  }
+
+  void _blockE(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockEPage();
+        },
+      ),
+    );
+  }
+
+  void _blockG(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockGPage();
+        },
+      ),
+    );
+  }
 
   Stream<Map<String, int>> getPendingRequestCounts() {
     final user = FirebaseAuth.instance.currentUser;
@@ -55,9 +114,7 @@ class AdminMenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String userId = FirebaseAuth.instance.currentUser!.uid;
-
-    print(userId);
+    super.build(context); 
 
     return Scaffold(
       body: Padding(
@@ -67,7 +124,7 @@ class AdminMenuPage extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
             Text(
-              'Choose a building',
+              'Pending Requests',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

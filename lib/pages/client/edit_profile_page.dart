@@ -46,7 +46,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        await FirebaseFirestore.instance.collection('User').doc(user.uid).update({
+        await FirebaseFirestore.instance
+            .collection('User')
+            .doc(user.uid)
+            .update({
           'FullName': fullNameController.text,
           'Email': emailController.text,
           'Phone': phoneController.text,
@@ -72,6 +75,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
         scrolledUnderElevation: 0.0,
+        centerTitle: true,
+        title: const Text(
+          'Edit Profile',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color.fromRGBO(191, 0, 6, 0.815),
+          ),
+        ),
       ),
       body: SafeArea(
         child: FutureBuilder<DocumentSnapshot>(
@@ -97,17 +109,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const Center(
-            child: Text(
-              'Edit Profile',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Color.fromRGBO(191, 0, 6, 0.815),
-              ),
-            ),
-          ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Form(
             child: Column(
               children: [
