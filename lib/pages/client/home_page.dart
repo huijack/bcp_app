@@ -24,17 +24,27 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   bool _isLoggingOut = false;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   void navigateBottomBar(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.jumpToPage(index);
   }
 
-  final List<Widget> _pages = [
-    const MenuPage(),
-    const ProfilePage(),
-  ];
 
   Future<void> showLogoutConfirmation() async {
     return showDialog<void>(
@@ -162,6 +172,7 @@ class _HomePageState extends State<HomePage> {
                       setState(() {
                         _selectedIndex = 0;
                       });
+                      _pageController.jumpToPage(0);
                       Navigator.pop(context);
                     },
                   ),
@@ -224,7 +235,18 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            body: _pages[_selectedIndex],
+            body: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              children: const [
+                MenuPage(),
+                ProfilePage(),
+              ],
+            ),
             bottomNavigationBar: MyBottomNavBar(
               onTabChange: (index) => navigateBottomBar(index),
             ),

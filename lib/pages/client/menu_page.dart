@@ -7,8 +7,17 @@ import 'package:flutter/material.dart';
 import 'edit_profile_page.dart';
 import 'track_status_page.dart';
 
-class MenuPage extends StatelessWidget {
+class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
+
+  @override
+  State<MenuPage> createState() => _MenuPageState();
+}
+
+class _MenuPageState extends State<MenuPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
   void _submitRequest(BuildContext context) {
     // navigate to the submit request page
@@ -52,6 +61,8 @@ class MenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final String userId = FirebaseAuth.instance.currentUser!.uid;
 
     return Scaffold(

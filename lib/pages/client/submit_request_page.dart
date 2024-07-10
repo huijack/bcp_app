@@ -84,6 +84,10 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
       // get current user ID
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
+      // Fetch user's name
+      final userDoc = await FirebaseFirestore.instance.collection('User').doc(userId).get();
+      final userName = userDoc.data()?['FullName'] ?? 'User';
+
       // Upload image to Firebase Storage
       String downloadURL = '';
       if (_hasImage && _pickedImage != null) {
@@ -132,6 +136,7 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
         'Image URL': downloadURL,
         'Status': 'Pending',
         'uId': userId,
+        'Reporter Name': userName,
         'timestamp': FieldValue.serverTimestamp(),
       });
 
@@ -179,20 +184,21 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
         scrolledUnderElevation: 0.0,
+        centerTitle: true,
+        title: const Text(
+          'Submit a Request',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color.fromRGBO(191, 0, 6, 0.815),
+          ),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
             child: Column(
               children: [
-                const Text(
-                  'Submit a Request',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(191, 0, 6, 0.815),
-                  ),
-                ),
                 const SizedBox(height: 30),
                 MyDropdown(
                   prefixIcon: FontAwesomeIcons.building,

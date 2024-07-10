@@ -6,7 +6,11 @@ class ImageViewerPage extends StatelessWidget {
   final String userId;
   final String imageName;
 
-  const ImageViewerPage({Key? key, required this.userId, required this.imageName}) : super(key: key);
+  const ImageViewerPage({
+    Key? key,
+    required this.userId,
+    required this.imageName,
+  }) : super(key: key);
 
   Future<String?> getImageUrl() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -68,6 +72,7 @@ class ImageViewerPage extends StatelessWidget {
                   );
                 }
                 if (snapshot.data == 'unauthorized') {
+                  print('User ID: $userId');
                   return const Center(
                     child: Text(
                       'Unauthorized: You do not have permission to view this image.',

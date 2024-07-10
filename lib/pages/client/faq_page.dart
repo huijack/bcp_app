@@ -10,22 +10,20 @@ class FaqPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
         scrolledUnderElevation: 0.0,
+        centerTitle: true,
+        title: const Text(
+          'FAQ',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color.fromRGBO(191, 0, 6, 0.815),
+          ),
+        ),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'FAQ',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromRGBO(191, 0, 6, 0.815),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 30),
             Expanded(
               child: ListView(
                 children: const [

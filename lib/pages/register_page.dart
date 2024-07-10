@@ -145,118 +145,163 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
-        scrolledUnderElevation: 0.0,
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                const Text(
-                  'Set up your account',
-                  style: TextStyle(
-                    color: Color.fromRGBO(191, 0, 6, 0.815),
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                Text(
-                  'Create your account. It\'s free!',
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                // fullname input
-                MyTextField(
-                  controller: fullnameController,
-                  hintText: 'Full Name',
-                  obscureText: false,
-                  prefixIcon: Icons.person,
-                  allowNewLines: false,
-                ),
-
-                const SizedBox(height: 25),
-
-                // email input
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                  prefixIcon: Icons.mail,
-                  allowNewLines: false,
-                ),
-
-                const SizedBox(height: 25),
-
-                // password input
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                  prefixIcon: Icons.lock,
-                ),
-
-                const SizedBox(height: 25),
-
-                // confirm password input
-                MyTextField(
-                  controller: confirmpasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                  prefixIcon: Icons.lock,
-                ),
-
-                const SizedBox(height: 35),
-
-                // register button
-                MyButton(
-                  buttonText: 'Sign Up',
-                  onTap: registerUser,
-                ),
-
-                const SizedBox(height: 15),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                  text: 'By signing up, you agree to our '),
-                              TextSpan(
-                                text: 'Terms and Conditions',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              TextSpan(text: ' and '),
-                              TextSpan(
-                                text: 'Privacy Policy',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              TextSpan(text: '.'),
-                            ],
+                      Column(
+                        children: [
+                          const Text(
+                            'Set up your account',
+                            style: TextStyle(
+                              color: Color.fromRGBO(191, 0, 6, 0.815),
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
+                          const SizedBox(height: 20),
+                          Text(
+                            'Create your account. It\'s free!',
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          // fullname input
+                          MyTextField(
+                            controller: fullnameController,
+                            hintText: 'Full Name',
+                            obscureText: false,
+                            prefixIcon: Icons.person,
+                            allowNewLines: false,
+                          ),
+                          const SizedBox(height: 25),
+                          // email input
+                          MyTextField(
+                            controller: emailController,
+                            hintText: 'Email',
+                            obscureText: false,
+                            prefixIcon: Icons.mail,
+                            allowNewLines: false,
+                          ),
+                          const SizedBox(height: 25),
+                          // password input
+                          MyTextField(
+                            controller: passwordController,
+                            hintText: 'Password',
+                            obscureText: true,
+                            prefixIcon: Icons.lock,
+                          ),
+                          const SizedBox(height: 25),
+                          // confirm password input
+                          MyTextField(
+                            controller: confirmpasswordController,
+                            hintText: 'Confirm Password',
+                            obscureText: true,
+                            prefixIcon: Icons.lock,
+                          ),
+                          const SizedBox(height: 35),
+                          // register button
+                          MyButton(
+                            buttonText: 'Sign Up',
+                            onTap: registerUser,
+                          ),
+                          const SizedBox(height: 15),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 25),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              'By signing up, you agree to our ',
+                                          style: TextStyle(
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Terms and Conditions',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: ' and ',
+                                          style: TextStyle(
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Privacy Policy',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                        TextSpan(text: '.'),
+                                      ],
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const Spacer(), // This will push the "Already have an account?" section to the bottom
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Already have an account?',
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                            const SizedBox(width: 5),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AuthPage(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
