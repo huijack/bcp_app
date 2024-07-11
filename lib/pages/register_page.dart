@@ -1,9 +1,14 @@
+import 'dart:math';
 import 'package:bcp_app/components/my_button.dart';
 import 'package:bcp_app/components/my_textfield.dart';
 import 'package:bcp_app/pages/auth_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
+
+import 'otp_verify_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -13,131 +18,98 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // text editing controller
+  // text editing controllers
   final fullnameController = TextEditingController();
-
   final emailController = TextEditingController();
-
   final passwordController = TextEditingController();
-
   final confirmpasswordController = TextEditingController();
+  bool isLoading = false;
+  String? generatedOTP;
 
-  // register function
-  void registerUser() async {
-    // show loading circle
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+  String generateOTP() {
+    var random = Random();
+    int otp = random.nextInt(9000) + 1000;
+    return otp.toString();
+  }
 
-    // try creating the user
+  Future<void> sendEmail(String email, String otp) async {
+    final smtpServer = gmail('jacklim2626@gmail.com', 'vtgyigbxfzkcgwxa');
+    final message = Message()
+      ..from = const Address('jacklim2626@gmail.com', 'UCSI Report')
+      ..recipients.add(email)
+      ..subject = 'UCSI Report OTP Verification'
+      ..text = 'Your OTP code is $otp. Please do not share this code with anyone.';
+
     try {
-      // check if the passwords match
-      if (passwordController.text != confirmpasswordController.text) {
-        Navigator.pop(context);
+      final sendReport = await send(message, smtpServer);
+      print('Message sent: ' + sendReport.toString());
+    } on MailerException catch (e) {
+      print('Message not sent. \n' + e.toString());
+    }
+  }
 
-        // show error message
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Registration Error'),
-              content:
-                  const Text('Your passwords do not match. Please try again'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('OK'),
-                )
-              ],
-            );
-          },
-        );
+  Future<String> resendOTP(String oldOTP) async {
+    String newOTP = generateOTP();
+    await sendEmail(emailController.text, newOTP);
+    return newOTP;
+  }
 
-        return;
-      }
-
-      // create the user in Firebase Auth
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
+  Future<void> handleSignUp() async {
+    if (emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmpasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
       );
+      return;
+    }
 
-      // get the user ID
-      String uid = userCredential.user!.uid;
+    if (passwordController.text != confirmpasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
 
-      // add the user to Firestore
-      await FirebaseFirestore.instance.collection('User').doc(uid).set({
-        'FullName': fullnameController.text,
-        'Email': emailController.text,
-        'Phone': '',
-        'Address': '',
-        'Postcode': '',
-        'City': '',
-        'State': '',
-        'uId': uid,
-        'isAdmin': false,
-      });
+    setState(() {
+      isLoading = true;
+    });
 
-      // hide loading circle
-      Navigator.pop(context);
+    try {
+      generatedOTP = generateOTP();
 
-      // navigate the user to the home page
-      Navigator.of(context).pushAndRemoveUntil(
+      await sendEmail(emailController.text, generatedOTP!);
+
+      Navigator.push(
+        context,
         MaterialPageRoute(
-          builder: (context) => const AuthPage(),
+          builder: (context) => OTPVerifyPage(
+            initialOTP: generatedOTP!,
+            resendOTP: resendOTP,
+            email: emailController.text,
+            fullName: fullnameController.text,
+            password: passwordController.text,
+          ),
         ),
-        (route) => false,
-      );
-
-      // Show success dialog
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Registration Successful'),
-            content: const Text('Your account has been created successfully!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context); // Close the success dialog
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
       );
     } catch (e) {
-      Navigator.pop(context);
-
-      // show error message
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Registration Error'),
-            content: const Text(
-                'An error occurred while registering your account. Please try again'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('OK'),
-              )
-            ],
-          );
-        },
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
+  }
+
+  @override
+  void dispose() {
+    fullnameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmpasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -166,7 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 5),
                           Text(
                             'Create your account. It\'s free!',
                             style: TextStyle(
@@ -211,10 +183,27 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                           const SizedBox(height: 35),
                           // register button
-                          MyButton(
-                            buttonText: 'Sign Up',
-                            onTap: registerUser,
-                          ),
+                          if (isLoading)
+                            Container(
+                              padding: const EdgeInsets.all(25),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 25),
+                              decoration: BoxDecoration(
+                                color: const Color.fromRGBO(191, 0, 7, 100),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Colors.white),
+                                ),
+                              ),
+                            ),
+                          if (!isLoading)
+                            MyButton(
+                              buttonText: 'Sign Up',
+                              onTap: handleSignUp,
+                            ),
                           const SizedBox(height: 15),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -253,7 +242,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                             color: Colors.grey[700],
                                           ),
                                         ),
-                                        TextSpan(text: '.'),
+                                        const TextSpan(text: '.'),
                                       ],
                                     ),
                                     textAlign: TextAlign.center,
@@ -285,10 +274,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 );
                               },
-                              child: const Text(
+                              child: Text(
                                 'Sign In',
                                 style: TextStyle(
-                                  color: Colors.blue,
+                                  color: Colors.red[900],
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

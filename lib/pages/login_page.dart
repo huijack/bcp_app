@@ -3,11 +3,13 @@ import 'package:bcp_app/components/my_textfield.dart';
 import 'package:bcp_app/pages/auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'forgot_password_page.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -17,35 +19,41 @@ class _LoginPageState extends State<LoginPage> {
   // text editing controller
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool rememberMe = false;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserEmailPassword();
+  }
+
+  void _loadUserEmailPassword() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var email = prefs.getString("email") ?? "";
+      var password = prefs.getString("password") ?? "";
+      var rememberMeValue = prefs.getBool("remember_me") ?? false;
+
+      if (rememberMeValue) {
+        if (mounted) {
+          setState(() {
+            rememberMe = true;
+            emailController.text = email;
+            passwordController.text = password;
+          });
+        }
+      }
+    } catch (e) {
+      print("Error loading email and password: $e");
+    }
+  }
 
   // sign in function
   void signUserIn() async {
-    bool isLoadingDialogVisible = false;
-
-    // show loading circle
-    showLoadingDialog() {
-      if (mounted && !isLoadingDialogVisible) {
-        isLoadingDialogVisible = true;
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        );
-      }
-    }
-
-    hideLoadingDialog() {
-      if (isLoadingDialogVisible && mounted) {
-        Navigator.of(context).pop();
-        isLoadingDialogVisible = false;
-      }
-    }
-
-    showLoadingDialog();
+    setState(() {
+      isLoading = true;
+    });
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -53,10 +61,23 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text,
       );
 
-      // hide loading circle and navigate
-      hideLoadingDialog();
+      if (rememberMe) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString("email", emailController.text);
+        await prefs.setString("password", passwordController.text);
+        await prefs.setBool("remember_me", rememberMe);
+      } else {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove("email");
+        await prefs.remove("password");
+        await prefs.remove("remember_me");
+      }
 
       if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => const AuthPage(),
@@ -65,22 +86,18 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } on FirebaseAuthException catch (e) {
-      // hide loading circle and show error message
-      hideLoadingDialog();
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
 
       String errorMessage;
       switch (e.code) {
-        case 'user-not-found':
-          errorMessage = 'No user found for that email.';
-          break;
-        case 'wrong-password':
-          errorMessage = 'Wrong password provided for that user.';
-          break;
         default:
-          errorMessage = 'An error occurred. Please try again.';
+          errorMessage = 'Email or password is incorrect. Please try again.';
       }
 
-      // show error message
       if (mounted) {
         showDialog(
           context: context,
@@ -101,16 +118,18 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
-      // hide loading circle and show generic error message
-      hideLoadingDialog();
-
       if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+
         showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
               title: const Text('Login Error'),
-              content: const Text('An unexpected error occurred. Please try again.'),
+              content:
+                  const Text('An unexpected error occurred. Please try again.'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -124,6 +143,23 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     }
+  }
+
+  // forgot password
+  void forgotPassword() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ForgotPasswordPage(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -173,16 +209,73 @@ class _LoginPageState extends State<LoginPage> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
-                const SizedBox(height: 35),
-                MyButton(
-                  buttonText: 'Sign In',
-                  onTap: signUserIn,
+                const SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              height: 24,
+                              width: 40,
+                              child: Checkbox(
+                                value: rememberMe,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    rememberMe = value!;
+                                  });
+                                },
+                                activeColor: Colors.red[900],
+                              ),
+                            ),
+                            Text(
+                              'Remember me',
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: forgotPassword,
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(color: Colors.red[900]),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 35),
+                if (isLoading)
+                  Container(
+                    padding: const EdgeInsets.all(25),
+                    margin: const EdgeInsets.symmetric(horizontal: 25),
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(191, 0, 7, 100),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    ),
+                  ),
+                if (!isLoading)
+                  MyButton(
+                    buttonText: 'Sign In',
+                    onTap: signUserIn,
+                  ),
                 const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('New user?', style: TextStyle(color: Colors.grey[700])),
+                    Text('New user?',
+                        style: TextStyle(color: Colors.grey[700])),
                     const SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
@@ -192,10 +285,10 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) => const RegisterPage()),
                         );
                       },
-                      child: const Text(
+                      child: Text(
                         'Register an account',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Colors.red[900],
                           fontWeight: FontWeight.bold,
                         ),
                       ),
