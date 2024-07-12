@@ -72,7 +72,8 @@ class _MyBuildingState extends State<MyBuilding> {
               }
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(
-                    child: Text('No pending requests found for this building.'));
+                    child:
+                        Text('No pending requests found for this building.'));
               }
 
               var requests = snapshot.data!.docs
@@ -81,7 +82,8 @@ class _MyBuildingState extends State<MyBuilding> {
 
               if (requests.isEmpty) {
                 return const Center(
-                    child: Text('No pending requests found for this building.'));
+                    child:
+                        Text('No pending requests found for this building.'));
               }
 
               // Sort requests by equipment priority and then by Request ID
@@ -95,12 +97,15 @@ class _MyBuildingState extends State<MyBuilding> {
                 } else {
                   var aId = a['Request ID'];
                   var bId = b['Request ID'];
-                  if (aId is int && bId is int) {
-                    return bId.compareTo(aId); // Reverse order for latest first
-                  } else if (aId is String && bId is String) {
-                    return bId.compareTo(aId); // Reverse order for latest first
+                  // Convert to int if possible, otherwise use string comparison
+                  int? aIntId = int.tryParse(aId.toString());
+                  int? bIntId = int.tryParse(bId.toString());
+                  if (aIntId != null && bIntId != null) {
+                    return bIntId
+                        .compareTo(aIntId); // Reverse order for latest first
                   } else {
-                    return 0;
+                    return bId.toString().compareTo(
+                        aId.toString()); // Reverse order for latest first
                   }
                 }
               });
@@ -191,7 +196,6 @@ class _MyBuildingState extends State<MyBuilding> {
                                     icon: const Icon(Icons.remove_red_eye,
                                         color: Colors.white),
                                     onPressed: () async {
-                                      // Handle view details action
                                       final result =
                                           await showModalBottomSheet<bool>(
                                         context: context,

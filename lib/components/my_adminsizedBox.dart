@@ -1,3 +1,4 @@
+import 'package:bcp_app/mail/user_email.dart';
 import 'package:bcp_app/pages/admin/admin_imageViewer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +15,11 @@ class MyAdminSizedBox extends StatefulWidget {
 
 class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
   late String status;
+  bool isLoading = false;
+  final UserEmail emailSender = UserEmail(
+      stmpServer: 'smtp.gmail.com',
+      username: 'jacklim2626@gmail.com',
+      password: 'vtgyigbxfzkcgwxa');
 
   Future<void> updateStatus() async {
     // Show confirmation dialog
@@ -41,12 +47,32 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
     // If confirmed, update the status
     if (confirm == true) {
       try {
+        setState(() {
+          isLoading = true;
+        });
+
         await FirebaseFirestore.instance
             .collection('Request')
             .doc(widget.request.id)
             .update({'Status': 'Fixed'});
 
-        // show success dialog
+        final userSnapshot = await FirebaseFirestore.instance
+            .collection('User')
+            .doc(widget.request['uId'])
+            .get();
+        final userEmailAddress = userSnapshot['Email'];
+
+        final requestNumber = widget.request['Request ID'] ?? widget.request.id;
+
+        // Send email to user
+        await emailSender.sendEmail(
+          userEmailAddress,
+          'Request Status Update',
+          // replace with the user's name
+          'Your request with ID $requestNumber has been marked as Fixed.',
+        );
+
+        // Show success dialog
         await showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -57,7 +83,7 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                 TextButton(
                   child: const Text('OK'),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the sizedbox
+                    Navigator.of(context).pop(); // Close the dialog
                   },
                 ),
               ],
@@ -75,6 +101,10 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
             content: Text('Failed to update status. Please try again.'),
           ),
         );
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
   }
@@ -206,10 +236,10 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                               ),
                             );
                           },
-                          child: const Text(
+                          child: Text(
                             'Tap to view image',
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: Colors.red[900],
                               decoration: TextDecoration.underline,
                             ),
                           ),
@@ -225,13 +255,21 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                               const Color.fromRGBO(191, 0, 6, 0.815),
                           padding: const EdgeInsets.symmetric(vertical: 15),
                         ),
-                        child: Text(
-                          status == 'Fixed' ? 'Request Fixed' : 'Mark as Fixed',
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white),
+                              )
+                            : Text(
+                                status == 'Fixed'
+                                    ? 'Request Fixed'
+                                    : 'Mark as Fixed',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 20),
