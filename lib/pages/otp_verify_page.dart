@@ -32,6 +32,7 @@ class _OTPVerifyState extends State<OTPVerifyPage> {
   late Timer _resendTimer;
   late Timer _otpTimeoutTimer;
   bool _isOTPValid = true;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -81,6 +82,10 @@ class _OTPVerifyState extends State<OTPVerifyPage> {
       );
       return;
     }
+
+    setState(() {
+      isLoading = true;
+    });
 
     if (enteredOTP == currentOTP) {
       _otpTimeoutTimer.cancel();
@@ -135,11 +140,19 @@ class _OTPVerifyState extends State<OTPVerifyPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.toString()}')),
         );
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid OTP')),
       );
+
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -268,18 +281,38 @@ class _OTPVerifyState extends State<OTPVerifyPage> {
                   }, // end onSubmit
                 ),
                 const SizedBox(height: 40),
-                ElevatedButton(
-                  onPressed: verifyOTP,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(191, 0, 6, 0.815),
+                if (isLoading)
+                  Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 70, vertical: 15),
+                        horizontal: 75, vertical: 15),
+                    margin: const EdgeInsets.symmetric(horizontal: 50),
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(191, 0, 6, 0.815),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                    ),
                   ),
-                  child: const Text(
-                    'Verify',
-                    style: TextStyle(color: Colors.white),
+                if (!isLoading)
+                  ElevatedButton(
+                    onPressed: verifyOTP,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(191, 0, 6, 0.815),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 70, vertical: 15),
+                    ),
+                    child: const Text(
+                      'Verify',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
                 const SizedBox(height: 20),
                 TextButton(
                   onPressed: _resendCooldown == 0 ? handleResendOTP : null,

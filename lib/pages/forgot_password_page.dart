@@ -39,7 +39,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             return AlertDialog(
               title: const Text('Password Reset Email Sent'),
               content: const Text(
-                  'A password reset email has been sent to your email address. Please check your inbox and follow the instructions to reset your password.'),
+                  'Please check your inbox from the email address and follow the instructions to reset your password.'),
               actions: [
                 TextButton(
                   onPressed: () {

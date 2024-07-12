@@ -21,6 +21,7 @@ class SubmitRequestPage extends StatefulWidget {
 class _SubmitRequestPageState extends State<SubmitRequestPage> {
   String? _selectedBuilding;
   String? _selectedEquipment;
+  bool isLoading = false;
   bool _hasImage = false;
   XFile? _pickedImage; // Store the picked image here
 
@@ -71,16 +72,11 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
       return;
     }
 
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-
     try {
+      setState(() {
+        isLoading = true;
+      });
+
       // get current user ID
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -140,15 +136,21 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      // Close loading dialog
-      Navigator.of(context).pop();
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Request submitted successfully'),
-        ),
-      );
+      // alert dialog to show success message
+      await showDialog(context: context, builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Request Submitted'),
+          content: const Text('Your request has been submitted successfully.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      });
 
       // Clear form
       roomNoController.clear();
@@ -159,11 +161,12 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
         _selectedEquipment = null;
         _hasImage = false;
         _pickedImage = null;
+        isLoading = false;
       });
     } catch (error) {
-      
-      // Close loading dialog
-      Navigator.of(context).pop();
+      setState(() {
+        isLoading = false;
+      });
 
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -237,7 +240,7 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
                       child: Text('Projector'),
                     ),
                     DropdownMenuItem(
-                      value: 'Aircon',
+                      value: 'Air Conditioner',
                       child: Text('Air Conditioner'),
                     ),
                     DropdownMenuItem(
@@ -285,10 +288,26 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
                   prefixIcon: Icons.note,
                 ),
                 const SizedBox(height: 40),
-                MyButton(
-                  onTap: () => submitRequest(context),
-                  buttonText: "Submit Request",
-                )
+                if (isLoading)
+                  Container(
+                    padding: const EdgeInsets.all(25),
+                    margin: const EdgeInsets.symmetric(horizontal: 25),
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(191, 0, 7, 100),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    ),
+                  ),
+                if (!isLoading)
+                  MyButton(
+                    onTap: () => submitRequest(context),
+                    buttonText: "Submit Request",
+                  ),
+                const SizedBox(height: 25),
               ],
             ),
           ),
