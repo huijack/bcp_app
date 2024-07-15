@@ -13,20 +13,16 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
-    print('AuthPage build called'); // Debug print
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          print(
-              'StreamBuilder update: ${snapshot.connectionState}'); // Debug print
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasData) {
-            print('User is signed in, returning HomePageLoader'); // Debug print
             return HomePageLoader();
           } else {
-            print('No user signed in, returning LoginPage'); // Debug print
             return LoginPage();
           }
         },

@@ -235,19 +235,22 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            body: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              children: const [
-                MenuPage(),
-                ProfilePage(),
-              ],
+            body: GestureDetector(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                children: const [
+                  MenuPage(),
+                  ProfilePage(),
+                ],
+              ),
             ),
             bottomNavigationBar: MyBottomNavBar(
+              selectedIndex: _selectedIndex,
               onTabChange: (index) => navigateBottomBar(index),
             ),
           ),
