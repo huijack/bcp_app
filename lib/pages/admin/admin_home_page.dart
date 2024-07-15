@@ -95,6 +95,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isKeyBoardOpen = MediaQuery.of(context).viewInsets.bottom != 0.0;
+
     return WillPopScope(
       onWillPop: () async {
         await showLogoutConfirmation();
@@ -103,6 +105,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
       child: Stack(
         children: [
           Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(kToolbarHeight),
               child: Container(
@@ -181,9 +184,12 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 AdminHistoryPage(),
               ],
             ),
-            bottomNavigationBar: MyAdminNavBar(
-              onTabChange: (index) => navigateBottomBar(index),
-            ),
+            bottomNavigationBar: isKeyBoardOpen
+                ? null
+                : MyAdminNavBar(
+                    onTabChange: (index) => navigateBottomBar(index),
+                    selectedIndex: _selectedIndex,
+                  ),
           ),
           if (_isLoggingOut)
             Container(

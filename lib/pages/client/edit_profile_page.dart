@@ -19,6 +19,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final postcodeController = TextEditingController();
   final cityController = TextEditingController();
   final stateController = TextEditingController();
+  bool isLoading = false;
 
   // Initialize the Future directly
   late final Future<DocumentSnapshot> userDataFuture = fetchUserData();
@@ -43,6 +44,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> updateProfile(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
+
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
@@ -58,13 +63,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
           'City': cityController.text,
           'State': stateController.text,
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully')),
+        // Alert dialog to show success message
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Profile Updated'),
+              content: const Text('Your profile has been updated successfully'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error updating profile: $e')),
         );
+
+        setState(() {
+          isLoading = false;
+        });
       }
     }
   }
@@ -164,10 +189,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   prefixIcon: Icons.location_history,
                 ),
                 SizedBox(height: 30),
-                MyButton(
-                  onTap: () => updateProfile(context),
-                  buttonText: 'Update Profile',
-                ),
+                if (isLoading)
+                  Container(
+                    padding: const EdgeInsets.all(25),
+                    margin: const EdgeInsets.symmetric(horizontal: 25),
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(191, 0, 7, 100),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    ),
+                  ),
+                if (!isLoading)
+                  MyButton(
+                    buttonText: 'Sign In',
+                    onTap: () => updateProfile(context),
+                  ),
               ],
             ),
           )

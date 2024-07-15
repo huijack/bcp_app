@@ -1,12 +1,23 @@
+import 'package:bcp_app/components/my_searchbar.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
+import '../../components/my_debouncer.dart';
 import 'request_details_page.dart';
 
-class ViewPastRequestsPage extends StatelessWidget {
+class ViewPastRequestsPage extends StatefulWidget {
   const ViewPastRequestsPage({super.key});
+
+  @override
+  State<ViewPastRequestsPage> createState() => _ViewPastRequestsPageState();
+}
+
+class _ViewPastRequestsPageState extends State<ViewPastRequestsPage> {
+  final TextEditingController _searchController = SearchController();
+  String _searchText = '';
+  final Debouncer _debouncer = Debouncer(milliseconds: 500);
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +46,17 @@ class ViewPastRequestsPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Column(
             children: [
+              MySearchBar(
+                controller: _searchController,
+                onChanged: (value) {
+                  _debouncer.run(() {
+                    setState(() {
+                      _searchText = value;
+                    });
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -54,6 +76,13 @@ class ViewPastRequestsPage extends StatelessWidget {
                     }
 
                     var requests = snapshot.data!.docs.toList();
+
+                    if (_searchText.isNotEmpty) {
+                      requests = requests.where((request) {
+                        var requestId = request['Request ID']?.toString() ?? '';
+                        return requestId.contains(_searchText);
+                      }).toList();
+                    }
 
                     requests.sort((a, b) {
                       var aId = a['Request ID'];

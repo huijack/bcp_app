@@ -213,13 +213,6 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                       ),
                       subtitle: Text(issues),
                     ),
-                    ListTile(
-                      title: const Text(
-                        'Remarks',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(remarks),
-                    ),
                     if (imageUrl.isNotEmpty)
                       ListTile(
                         title: const Text(
@@ -236,15 +229,22 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                               ),
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Tap to view image',
                             style: TextStyle(
-                              color: Colors.red[900],
-                              decoration: TextDecoration.underline,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
+                    ListTile(
+                      title: const Text(
+                        'Remarks',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(remarks),
+                    ),
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),

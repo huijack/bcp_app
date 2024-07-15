@@ -162,140 +162,174 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  Future<void> showExitAppConfirmation() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Exit App'),
+          content: const Text('Are you sure you want to exit the app?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Exit'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                const SizedBox(height: 50),
-                const Icon(Icons.report, size: 150),
-                const SizedBox(height: 20),
-                const Text(
-                  'Welcome to UCSI Report!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(191, 0, 6, 0.815),
-                  ),
-                ),
-                const SizedBox(height: 15),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Text(
-                    'A mobile app to submit, track, and manage equipment maintenance requests on campus',
+    return WillPopScope(
+      onWillPop: () async {
+        await showExitAppConfirmation();
+        return false;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 50),
+                  const Icon(Icons.report, size: 150),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Welcome to UCSI Report!',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade600,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(191, 0, 6, 0.815),
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ),
-                const SizedBox(height: 30),
-                MyTextField(
-                  controller: emailController,
-                  prefixIcon: Icons.mail,
-                  hintText: 'Email',
-                  obscureText: false,
-                  allowNewLines: false,
-                ),
-                const SizedBox(height: 25),
-                MyTextField(
-                  controller: passwordController,
-                  prefixIcon: Icons.password,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-                const SizedBox(height: 5),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              height: 24,
-                              width: 40,
-                              child: Checkbox(
-                                value: rememberMe,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    rememberMe = value!;
-                                  });
-                                },
-                                activeColor: Colors.red[900],
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Text(
+                      'A mobile app to submit, track, and manage equipment maintenance requests on campus',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  MyTextField(
+                    controller: emailController,
+                    prefixIcon: Icons.mail,
+                    hintText: 'Email',
+                    obscureText: false,
+                    allowNewLines: false,
+                  ),
+                  const SizedBox(height: 25),
+                  MyTextField(
+                    controller: passwordController,
+                    prefixIcon: Icons.password,
+                    hintText: 'Password',
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 5),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                height: 24,
+                                width: 40,
+                                child: Checkbox(
+                                  value: rememberMe,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      rememberMe = value!;
+                                    });
+                                  },
+                                  activeColor: Colors.red[900],
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Remember me',
-                              style: TextStyle(
-                                color: Colors.grey[700],
+                              Text(
+                                'Remember me',
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: forgotPassword,
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(color: Colors.red[900]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 35),
+                  if (isLoading)
+                    Container(
+                      padding: const EdgeInsets.all(25),
+                      margin: const EdgeInsets.symmetric(horizontal: 25),
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(191, 0, 7, 100),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
                         ),
                       ),
-                      TextButton(
-                        onPressed: forgotPassword,
+                    ),
+                  if (!isLoading)
+                    MyButton(
+                      buttonText: 'Sign In',
+                      onTap: signUserIn,
+                    ),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('New user?',
+                          style: TextStyle(color: Colors.grey[700])),
+                      const SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const RegisterPage()),
+                          );
+                        },
                         child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(color: Colors.red[900]),
+                          'Register an account',
+                          style: TextStyle(
+                            color: Colors.red[900],
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 35),
-                if (isLoading)
-                  Container(
-                    padding: const EdgeInsets.all(25),
-                    margin: const EdgeInsets.symmetric(horizontal: 25),
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(191, 0, 7, 100),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    ),
-                  ),
-                if (!isLoading)
-                  MyButton(
-                    buttonText: 'Sign In',
-                    onTap: signUserIn,
-                  ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('New user?',
-                        style: TextStyle(color: Colors.grey[700])),
-                    const SizedBox(width: 5),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const RegisterPage()),
-                        );
-                      },
-                      child: Text(
-                        'Register an account',
-                        style: TextStyle(
-                          color: Colors.red[900],
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

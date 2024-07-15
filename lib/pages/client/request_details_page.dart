@@ -94,7 +94,15 @@ class RequestDetailsPage extends StatelessWidget {
                               'Status',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            subtitle: Text(status),
+                            subtitle: Text(
+                              status,
+                              style: TextStyle(
+                                color: status == 'Pending'
+                                    ? Colors.red
+                                    : Colors.green,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -105,13 +113,6 @@ class RequestDetailsPage extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(issues),
-                    ),
-                    ListTile(
-                      title: const Text(
-                        'Remarks',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(remarks),
                     ),
                     if (imageName.isNotEmpty)
                       ListTile(
@@ -135,11 +136,18 @@ class RequestDetailsPage extends StatelessWidget {
                             'Tap to view image',
                             style: TextStyle(
                               color: Colors.blue,
-                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
+                    ListTile(
+                      title: const Text(
+                        'Remarks',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(remarks),
+                    ),
                   ],
                 ),
               ),
