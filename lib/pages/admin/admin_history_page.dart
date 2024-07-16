@@ -28,6 +28,19 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
     super.build(context);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[200],
+        scrolledUnderElevation: 0.0,
+        centerTitle: true,
+        title: const Text(
+          'View History',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color.fromRGBO(191, 0, 6, 0.815),
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Padding(
