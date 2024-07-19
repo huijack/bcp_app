@@ -1,16 +1,17 @@
+import 'package:bcp_app/pages/admin/pending_requests_page.dart';
+import 'package:bcp_app/pages/admin/fixed_requests_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:bcp_app/components/my_adminnavbar.dart';
 import 'package:bcp_app/pages/admin/admin_history_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../components/my_card.dart';
-import 'blockA_page.dart';
-import 'blockB_page.dart';
-import 'blockC_page.dart';
-import 'blockE_page.dart';
-import 'blockG_page.dart';
+import 'blockA_status_page.dart';
+import 'blockB_status_page.dart';
+import 'blockC_status_page.dart';
+import 'blockE_status_page.dart';
+import 'blockG_status_page.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({
@@ -22,16 +23,13 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
-  int _selectedIndex = 0;
   bool _isLoggingOut = false;
-  late PageController _pageController;
   String? userEmail;
   var height, width;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
     fetchUserEmail();
   }
 
@@ -46,15 +44,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
-  }
-
-  void navigateBottomBar(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    _pageController.jumpToPage(index);
   }
 
   Future<void> showLogoutConfirmation() async {
@@ -102,100 +92,30 @@ class _AdminHomePageState extends State<AdminHomePage> {
     }
   }
 
-  void _blockA(BuildContext context) {
+  void _assignTechnician(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return const BlockAPage();
+          return const PendingRequestsPage();
         },
       ),
     );
   }
 
-  void _blockB(BuildContext context) {
+  void _verifyRequests(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return BlockBPage();
-        },
-      ),
-    );
-  }
-
-  void _blockC(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return const BlockCPage();
-        },
-      ),
-    );
-  }
-
-  void _blockE(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return const BlockEPage();
-        },
-      ),
-    );
-  }
-
-  void _blockG(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return const BlockGPage();
+          return const FixedRequestPage();
         },
       ),
     );
   }
 
   Future<void> _refreshData() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {});
-  }
-
-  Stream<Map<String, int>> getPendingRequestCounts() {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      return Stream.value({});
-    }
-
-    final userId = user.uid;
-
-    return FirebaseFirestore.instance
-        .collection('Admin')
-        .doc(userId)
-        .get()
-        .asStream()
-        .asyncExpand((adminDoc) {
-      if (adminDoc.exists) {
-        return FirebaseFirestore.instance
-            .collection('Request')
-            .where('Status', isEqualTo: 'Pending')
-            .snapshots()
-            .map((snapshot) {
-          Map<String, int> counts = {
-            'Block A': 0,
-            'Block B': 0,
-            'Block C': 0,
-            'Block E': 0,
-            'Block G': 0,
-          };
-          for (var doc in snapshot.docs) {
-            String building = doc['Building'];
-            counts[building] = (counts[building] ?? 0) + 1;
-          }
-          return counts;
-        });
-      } else {
-        return Stream.value({});
-      }
-    });
   }
 
   @override
@@ -256,14 +176,14 @@ class _AdminHomePageState extends State<AdminHomePage> {
             onRefresh: _refreshData,
             color: Colors.red[900],
             child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color.fromRGBO(255, 154, 157, 50),
                 ),
                 child: Column(
                   children: [
-                    Container(
+                    SizedBox(
                       height: height * 0.25,
                       width: width,
                       child: Column(
@@ -295,7 +215,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            AdminHistoryPage(),
+                                            const AdminHistoryPage(),
                                       ),
                                     );
                                   },
@@ -352,7 +272,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                         ),
@@ -363,64 +283,27 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
                           children: [
-                            StreamBuilder<Map<String, int>>(
-                              stream: getPendingRequestCounts(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
-                                }
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                }
-                                final counts = snapshot.data ?? {};
-                                return GridView.count(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  children: [
-                                    MyCard(
-                                      icon: FontAwesomeIcons.a,
-                                      text: 'Block A',
-                                      onTap: () => _blockA(context),
-                                      requestCount: counts['Block A'] ?? 0,
-                                    ),
-                                    MyCard(
-                                      icon: FontAwesomeIcons.b,
-                                      text: 'Block B',
-                                      onTap: () => _blockB(context),
-                                      requestCount: counts['Block B'] ?? 0,
-                                    ),
-                                    MyCard(
-                                      icon: FontAwesomeIcons.c,
-                                      text: 'Block C',
-                                      onTap: () => _blockC(context),
-                                      requestCount: counts['Block C'] ?? 0,
-                                    ),
-                                    MyCard(
-                                      icon: FontAwesomeIcons.e,
-                                      text: 'Block E',
-                                      onTap: () => _blockE(context),
-                                      requestCount: counts['Block E'] ?? 0,
-                                    ),
-                                    MyCard(
-                                      icon: FontAwesomeIcons.g,
-                                      text: 'Block G',
-                                      onTap: () => _blockG(context),
-                                      requestCount: counts['Block G'] ?? 0,
-                                    ),
-                                    MyCard(
-                                      icon: FontAwesomeIcons.question,
-                                      text: 'More Info',
-                                      onTap: () {},
-                                      requestCount: 0,
-                                    )
-                                  ],
-                                );
-                              },
-                            ),
+                            GridView.count(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: [
+                                MyCard(
+                                  icon: FontAwesomeIcons.personDigging,
+                                  text: 'Pending Requests',
+                                  onTap: () => _assignTechnician(context),
+                                  requestCount: 0,
+                                ),
+                                MyCard(
+                                  icon: FontAwesomeIcons.flagCheckered,
+                                  text: 'Fixed Requests',
+                                  onTap: () => _verifyRequests(context),
+                                  requestCount: 0,
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),

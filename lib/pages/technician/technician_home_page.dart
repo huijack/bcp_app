@@ -1,45 +1,41 @@
+import 'package:bcp_app/components/my_card.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../components/my_card.dart';
-import '../../components/my_requestcounts.dart';
-import 'edit_profile_page.dart';
-import 'faq_page.dart';
-import 'profile_page.dart';
-import 'submit_feedback_page.dart';
-import 'submit_request_page.dart';
-import 'track_status_page.dart';
-import 'view_request_page.dart';
+import '../admin/blockA_status_page.dart';
+import '../admin/blockB_status_page.dart';
+import '../admin/blockC_status_page.dart';
+import '../admin/blockE_status_page.dart';
+import '../admin/blockG_status_page.dart';
 
-class HomePage extends StatefulWidget {
+class MyTechnicianHomePage extends StatefulWidget {
   final String? userName;
   final String? email;
 
-  const HomePage({
+  const MyTechnicianHomePage({
     super.key,
     required this.userName,
     required this.email,
   });
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MyTechnicianHomePage> createState() => _MyTechnicianHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  bool _isLoggingOut = false;
-  late PageController _pageController;
+class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
   var height, width;
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
+  bool _isLoggingOut = false;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -48,48 +44,6 @@ class _HomePageState extends State<HomePage> {
 
     setState(() {});
   }
-
-  void _submitRequest(BuildContext context) {
-    // navigate to the submit request page
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SubmitRequestPage(),
-      ),
-    );
-  }
-
-  void _trackRequestStatus(BuildContext context) {
-    // navigate to the track request status page
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TrackRequestStatusPage(),
-      ),
-    );
-  }
-
-  void _viewPastRequests(BuildContext context) {
-    // navigate to the view past requests page
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ViewPastRequestsPage(),
-      ),
-    );
-  }
-
-  void _editProfile(BuildContext context) {
-    // navigate to the edit profile page
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditProfilePage(),
-      ),
-    );
-  }
-
-  final String userId = FirebaseAuth.instance.currentUser!.uid;
 
   Future<void> showLogoutConfirmation() async {
     return showDialog<void>(
@@ -136,7 +90,96 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  
+  void _blockA(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockAStatusPage(
+            status: 'Assigned',
+          );
+        },
+      ),
+    );
+  }
+
+  void _blockB(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockBStatusPage(
+            status: 'Assigned',
+          );
+        },
+      ),
+    );
+  }
+
+  void _blockC(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockCStatusPage(
+            status: 'Assigned',
+          );
+        },
+      ),
+    );
+  }
+
+  void _blockE(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockEStatusPage(
+            status: 'Assigned',
+          );
+        },
+      ),
+    );
+  }
+
+  void _blockG(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return const BlockGStatusPage(
+            status: 'Assigned',
+          );
+        },
+      ),
+    );
+  }
+
+  Stream<Map<String, int>> getAssignedRequestCounts() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return Stream.value({});
+    }
+
+    final userId = user.uid;
+
+    return FirebaseFirestore.instance
+        .collection('Request')
+        .where('Status', isEqualTo: 'Assigned')
+        .where('Assigned To', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+      Map<String, int> counts = {
+        'Block A': 0,
+        'Block B': 0,
+        'Block C': 0,
+        'Block E': 0,
+        'Block G': 0,
+      };
+      for (var doc in snapshot.docs) {
+        String building = doc['Building'];
+        counts[building] = (counts[building] ?? 0) + 1;
+      }
+      return counts;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
@@ -157,7 +200,7 @@ class _HomePageState extends State<HomePage> {
                   color: Color.fromRGBO(191, 0, 7, 20),
                 ),
                 accountName: Text(
-                  widget.userName ?? 'User',
+                  widget.userName ?? 'Technician',
                   style: const TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
@@ -185,47 +228,6 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pop(context);
                 },
               ),
-              ListTile(
-                leading: const Icon(
-                  Icons.feedback,
-                  color: Colors.white,
-                ),
-                title: const Text(
-                  'Submit Feedback',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w700),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SubmitFeedbackPage(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.question_answer,
-                  color: Colors.white,
-                ),
-                title: const Text(
-                  'FAQs',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w700),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FaqPage(),
-                    ),
-                  );
-                },
-              ),
-              const Spacer(),
               ListTile(
                 leading: const Icon(
                   Icons.logout,
@@ -267,7 +269,7 @@ class _HomePageState extends State<HomePage> {
                             right: 15,
                           ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Builder(builder: (context) {
                                 return InkWell(
@@ -281,25 +283,6 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 );
                               }),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ProfilePage(),
-                                    ),
-                                  );
-                                },
-                                child: CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Colors.red[900],
-                                  child: const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                    size: 40,
-                                  ),
-                                ),
-                              )
                             ],
                           ),
                         ),
@@ -329,7 +312,7 @@ class _HomePageState extends State<HomePage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.userName ?? 'User',
+                                    widget.userName ?? 'Mr. Technician',
                                     style: TextStyle(
                                       color: Colors.red[900],
                                       fontSize: 36,
@@ -346,11 +329,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Container(
                     decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        )),
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
                     height: height * 0.75,
                     width: width,
                     child: Padding(
@@ -358,54 +342,68 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              GridView.count(
+                          StreamBuilder<Map<String, int>>(
+                            stream: getAssignedRequestCounts(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator();
+                              }
+                              if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              }
+                              final counts = snapshot.data ?? {};
+                              return GridView.count(
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
-                                shrinkWrap:
-                                    true, // Use shrinkWrap to take the natural size
+                                shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
                                 children: [
-                                  // Submit a Request
                                   MyCard(
-                                    icon: Icons.file_copy_outlined,
-                                    text: "Submit a Request",
-                                    onTap: () => _submitRequest(context),
+                                    icon: FontAwesomeIcons.a,
+                                    text: 'Block A',
+                                    onTap: () => _blockA(context),
+                                    requestCount: counts['Block A'] ?? 0,
                                   ),
-
-                                  // Track Request Status
                                   MyCard(
-                                    icon: Icons.local_shipping_outlined,
-                                    text: "Track Request Status",
-                                    onTap: () => _trackRequestStatus(context),
+                                    icon: FontAwesomeIcons.b,
+                                    text: 'Block B',
+                                    onTap: () => _blockB(context),
+                                    requestCount: counts['Block B'] ?? 0,
                                   ),
-
-                                  // View Past Requests
                                   MyCard(
-                                    icon: Icons.history,
-                                    text: "View Past Requests",
-                                    onTap: () => _viewPastRequests(context),
+                                    icon: FontAwesomeIcons.c,
+                                    text: 'Block C',
+                                    onTap: () => _blockC(context),
+                                    requestCount: counts['Block C'] ?? 0,
                                   ),
-
-                                  // Edit Profile
                                   MyCard(
-                                    icon: Icons.person_2_outlined,
-                                    text: "Edit Profile",
-                                    onTap: () => _editProfile(context),
+                                    icon: FontAwesomeIcons.e,
+                                    text: 'Block E',
+                                    onTap: () => _blockE(context),
+                                    requestCount: counts['Block E'] ?? 0,
                                   ),
+                                  MyCard(
+                                    icon: FontAwesomeIcons.g,
+                                    text: 'Block G',
+                                    onTap: () => _blockG(context),
+                                    requestCount: counts['Block G'] ?? 0,
+                                  ),
+                                  MyCard(
+                                    icon: FontAwesomeIcons.question,
+                                    text: 'More Info',
+                                    onTap: () {},
+                                    requestCount: 0,
+                                  )
                                 ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          RequestCountsCard(userId: userId),
+                              );
+                            },
+                          )
                         ],
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),

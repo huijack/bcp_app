@@ -62,6 +62,7 @@ class _ViewPastRequestsPageState extends State<ViewPastRequestsPage> {
                   stream: FirebaseFirestore.instance
                       .collection('Request')
                       .where('uId', isEqualTo: user.uid)
+                      .where('User Status', isEqualTo: 'Fixed')
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -102,7 +103,8 @@ class _ViewPastRequestsPageState extends State<ViewPastRequestsPage> {
                         var request = requests[index];
                         var requestId = request['Request ID']?.toString() ?? '';
                         var requestDate =
-                            request['timestamp']?.toDate() ?? DateTime.now();
+                            request['Submitted Date']?.toDate() ?? DateTime.now();
+                        var requestStatus = request['User Status']?.toString() ?? '';
 
                         return Card(
                           elevation: 0,
@@ -126,7 +128,7 @@ class _ViewPastRequestsPageState extends State<ViewPastRequestsPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'DATE: ${DateFormat('dd-MM-yyyy').format(requestDate)}',
+                                  'SUBMITTED DATE: ${DateFormat('dd-MM-yyyy').format(requestDate)}',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold),
                                 ),
