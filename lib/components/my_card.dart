@@ -40,14 +40,17 @@ class MyCard extends StatelessWidget {
                 children: [
                   Icon(icon, size: 50, color: Colors.red[900]),
                   const SizedBox(height: 10),
-                  Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.red[900],
-                      height: 1.2,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      text,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red[900],
+                        height: 1.2,
+                      ),
                     ),
                   ),
                 ],

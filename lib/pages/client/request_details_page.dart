@@ -1,6 +1,6 @@
+import 'package:bcp_app/pages/image_viewer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'image_viewer_page.dart';
 
 class RequestDetailsPage extends StatelessWidget {
   final QueryDocumentSnapshot request;
@@ -13,10 +13,10 @@ class RequestDetailsPage extends StatelessWidget {
     var equipment = request['Equipment'] ?? 'Unknown';
     var issues = request['Issues'] ?? 'No issues provided';
     var imageName = request['Image URL'] ?? '';
+    var resolvedImageName = request['Resolved Image URL'] ?? '';
     var remarks = request['Remarks'] ?? '';
     var roomNo = request['Room No'] ?? 'Unknown';
-    var status = request['Status'] ?? 'Pending';
-    var userId = request['uId'] ?? '';
+    var userStatus = request['User Status'] ?? 'Pending';
 
     return SizedBox(
       child: Column(
@@ -95,9 +95,9 @@ class RequestDetailsPage extends StatelessWidget {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text(
-                              status,
+                              userStatus,
                               style: TextStyle(
-                                color: status == 'Pending'
+                                color: userStatus == 'Pending'
                                     ? Colors.red
                                     : Colors.green,
                                 fontWeight: FontWeight.w500,
@@ -114,33 +114,61 @@ class RequestDetailsPage extends StatelessWidget {
                       ),
                       subtitle: Text(issues),
                     ),
-                    if (imageName.isNotEmpty)
-                      ListTile(
-                        title: const Text(
-                          'Image',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ImageViewerPage(
-                                  userId: userId,
-                                  imageName: imageName,
+                    Row(
+                      children: [
+                        Expanded(
+                            child: ListTile(
+                          title: const Text(
+                            'Submitted Image',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ImageViewerPage(imageUrl: imageName)
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Tap to view image',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        )),
+                        Expanded(
+                          child: ListTile(
+                            title: const Text(
+                              'Resolved Image',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ImageViewerPage(
+                                      imageUrl: resolvedImageName,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Tap to view image',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            );
-                          },
-                          child: const Text(
-                            'Tap to view image',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                      ),
+                      ],
+                    ),
                     ListTile(
                       title: const Text(
                         'Remarks',

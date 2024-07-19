@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../../components/my_building.dart';
 
-class BlockGPage extends StatelessWidget {
-  const BlockGPage({super.key});
+class BlockBStatusPage extends StatelessWidget {
+  final String status;
+
+  const BlockBStatusPage({
+    super.key,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const MyBuilding(
-      buildingName: 'Block G',
+    return MyBuilding(
+      buildingName: 'Block B',
       equipmentOrder: [
         'Projector',
         'Air Conditioner',
@@ -17,6 +22,7 @@ class BlockGPage extends StatelessWidget {
         'Door',
         'Others',
       ],
+      status: status,
     );
   }
 }

@@ -2,17 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AdminImageViewerPage extends StatelessWidget {
+class ImageViewerPage extends StatelessWidget {
   final String imageUrl;
 
-  const AdminImageViewerPage({super.key, required this.imageUrl});
+  const ImageViewerPage({super.key, required this.imageUrl});
 
-  Future<bool> isAdmin() async {
+  Future<bool> hasViewPermission() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return false;
 
-    final adminDoc = await FirebaseFirestore.instance.collection('Admin').doc(user.uid).get();
+    // First, check if the user is MaintenanceStaff
+    final maintenanceStaffDoc = await FirebaseFirestore.instance
+        .collection('MaintenanceStaff')
+        .doc(user.uid)
+        .get();
+
+    if (maintenanceStaffDoc.exists) return true;
+
+    // If not staff, check if they're User
+    final userDoc = await FirebaseFirestore.instance
+        .collection('User')
+        .doc(user.uid)
+        .get();
+      
+    if (userDoc.exists) return true; 
+
+    // If not user, check if they're Admin
+    final adminDoc = await FirebaseFirestore.instance
+        .collection('Admin')
+        .doc(user.uid)
+        .get();
+
     return adminDoc.exists;
+
   }
 
   @override
@@ -21,16 +43,16 @@ class AdminImageViewerPage extends StatelessWidget {
       backgroundColor: Colors.black,
       body: SafeArea(
         child: FutureBuilder<bool>(
-          future: isAdmin(),
-          builder: (context, adminSnapshot) {
-            if (adminSnapshot.connectionState == ConnectionState.waiting) {
+          future: hasViewPermission(),
+          builder: (context, permissionSnapshot) {
+            if (permissionSnapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (adminSnapshot.data != true) {
+            if (permissionSnapshot.data != true) {
               return const Center(
                 child: Text(
-                  'Unauthorized: You do not have admin permissions to view this image.',
+                  'Unauthorized: You do not have permission to view this image.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white),
                 ),

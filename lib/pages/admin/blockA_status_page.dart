@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../components/my_building.dart';
 
-class BlockAPage extends StatelessWidget {
-  const BlockAPage({super.key});
+class BlockAStatusPage extends StatelessWidget {
+  final String status;
+
+  const BlockAStatusPage({
+    super.key,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const MyBuilding(
+    return MyBuilding(
       buildingName: 'Block A',
       equipmentOrder: [
         'Projector',
@@ -17,6 +22,7 @@ class BlockAPage extends StatelessWidget {
         'Door',
         'Others',
       ],
+      status: status,
     );
   }
 }

@@ -60,7 +60,7 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('Request')
-                  .where('Status', isEqualTo: 'Fixed')
+                  .where('Status', isEqualTo: 'Verified')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -70,8 +70,8 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Text('No fixed requests found.'),
+                  return const Center(
+                    child: Text('No verified requests found.'),
                   );
                 }
 
@@ -98,7 +98,7 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
                     var request = requests[index];
                     var requestId = request['Request ID']?.toString() ?? '';
                     var requestDate =
-                        request['timestamp']?.toDate() ?? DateTime.now();
+                        request['Submitted Date']?.toDate() ?? DateTime.now();
                     var equipment = request['Equipment'] ?? 'Unknown';
                     var issues = request['Issues'] ?? 'No issues provided';
                     var imageUrl = request['Image URL'] ?? '';

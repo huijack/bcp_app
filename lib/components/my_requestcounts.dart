@@ -20,7 +20,7 @@ class RequestCountsCard extends StatelessWidget {
       int fixedCount = 0;
 
       for (var doc in querySnapshot.docs) {
-        final status = doc['Status'];
+        final status = doc['User Status'];
         if (status == 'Pending') {
           pendingCount++;
         } else if (status == 'Fixed') {

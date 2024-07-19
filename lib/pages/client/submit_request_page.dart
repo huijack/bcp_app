@@ -81,7 +81,8 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
       // Fetch user's name
-      final userDoc = await FirebaseFirestore.instance.collection('User').doc(userId).get();
+      final userDoc =
+          await FirebaseFirestore.instance.collection('User').doc(userId).get();
       final userName = userDoc.data()?['FullName'] ?? 'User';
 
       // Upload image to Firebase Storage
@@ -131,26 +132,38 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
         'Remarks': remarksController.text,
         'Image URL': downloadURL,
         'Status': 'Pending',
+        'User Status': 'Pending',
         'uId': userId,
         'Reporter Name': userName,
-        'timestamp': FieldValue.serverTimestamp(),
+        'Submitted Date': FieldValue.serverTimestamp(),
+        'Assigned To': '',
+        'Due Date': '',
+        'Importance': '',
+        'Resolved By': '',
+        'Resolved Date': '',
+        'Resolved Image URL': '',
+        'Verified Date': '',
       });
 
       // alert dialog to show success message
-      await showDialog(context: context, builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Request Submitted'),
-          content: const Text('Your request has been submitted successfully.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      });
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Request Submitted'),
+              content:
+                  const Text('Your request has been submitted successfully.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
 
       // Clear form
       roomNoController.clear();

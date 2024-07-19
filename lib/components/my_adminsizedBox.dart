@@ -1,5 +1,5 @@
 import 'package:bcp_app/mail/user_email.dart';
-import 'package:bcp_app/pages/admin/admin_imageViewer_page.dart';
+import 'package:bcp_app/pages/image_viewer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
@@ -28,8 +28,7 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirm Status Update'),
-          content: const Text(
-              'Are you sure you want to mark this request as Fixed?'),
+          content: const Text('Are you sure you want to verify this request?'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -54,7 +53,11 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
         await FirebaseFirestore.instance
             .collection('Request')
             .doc(widget.request.id)
-            .update({'Status': 'Fixed'});
+            .update({
+          'Status': 'Verified',
+          'User Status': 'Fixed',
+          'Verified Date': FieldValue.serverTimestamp(),
+        });
 
         final userSnapshot = await FirebaseFirestore.instance
             .collection('User')
@@ -68,8 +71,7 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
         await emailSender.sendEmail(
           userEmailAddress,
           'Request Status Update',
-          // replace with the user's name
-          'Your request with ID $requestNumber has been marked as Fixed.',
+          'Your request with ID $requestNumber has been resolved. Please check the app for more details.',
         );
 
         // Show success dialog
@@ -118,6 +120,8 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
     var remarks = widget.request['Remarks'] ?? '';
     var roomNo = widget.request['Room No'] ?? 'Unknown';
     var reporterName = widget.request['Reporter Name'] ?? '';
+    var resolvedImageUrl = widget.request['Resolved Image URL'] ?? '';
+    var resolvedBy = widget.request['Resolved By'] ?? '';
 
     return SizedBox(
       child: Column(
@@ -154,6 +158,24 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                 ),
                 child: ListView(
                   children: [
+                    // Request Details Section
+                    Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(191, 0, 6, 0.815),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Text(
+                          'Submitted Details',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
                     Row(
                       children: [
                         Expanded(
@@ -196,7 +218,7 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                             subtitle: Text(
                               status,
                               style: TextStyle(
-                                color: status == 'Fixed'
+                                color: status == 'Verified'
                                     ? Colors.green
                                     : Colors.red[900],
                                 fontWeight: FontWeight.w500,
@@ -225,7 +247,7 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    AdminImageViewerPage(imageUrl: imageUrl),
+                                    ImageViewerPage(imageUrl: imageUrl),
                               ),
                             );
                           },
@@ -245,11 +267,73 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                       ),
                       subtitle: Text(remarks),
                     ),
+                    // Resolved Details Section
+                    Divider(),
+                    if (resolvedBy.isNotEmpty || resolvedImageUrl.isNotEmpty)
+                      Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.green[900],
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Text(
+                            'Resolved Details',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    if (resolvedBy.isNotEmpty)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ListTile(
+                              title: const Text(
+                                'Resolved By',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(resolvedBy),
+                            ),
+                          ),
+                          Expanded(
+                            child: ListTile(
+                              title: const Text(
+                                'Resolved Image',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ImageViewerPage(
+                                              imageUrl: resolvedImageUrl),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  'Tap to view image',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: ElevatedButton(
-                        onPressed: status == 'Fixed' ? null : updateStatus,
+                        onPressed: status == 'Verified' ? null : updateStatus,
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               const Color.fromRGBO(191, 0, 6, 0.815),
@@ -261,9 +345,9 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                                     AlwaysStoppedAnimation(Colors.white),
                               )
                             : Text(
-                                status == 'Fixed'
-                                    ? 'Request Fixed'
-                                    : 'Mark as Fixed',
+                                status == 'Verified'
+                                    ? 'Request Verified'
+                                    : 'Mark as Verified',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,

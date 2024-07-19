@@ -25,14 +25,16 @@ class TrackRequestStatusPage extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              RequestCountsCard(userId: userId),
-              const SizedBox(height: 20),
-              MyTable(),
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                RequestCountsCard(userId: userId),
+                const SizedBox(height: 20),
+                MyTable(),
+              ],
+            ),
           ),
         ),
       ),

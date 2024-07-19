@@ -94,14 +94,14 @@ class _MyTableState extends State<MyTable> {
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 onSort: (columnIndex, ascending) =>
-                    _sort((doc) => doc['timestamp'], columnIndex, ascending),
+                    _sort((doc) => doc['Submitted Date'], columnIndex, ascending),
               ),
               DataColumn(
                 label: const Text('Status',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 onSort: (columnIndex, ascending) =>
-                    _sort((doc) => doc['Status'], columnIndex, ascending),
+                    _sort((doc) => doc['User Status'], columnIndex, ascending),
               ),
             ],
             rows: sortedDocs.asMap().entries.map((entry) {
@@ -140,9 +140,9 @@ class _MyTableState extends State<MyTable> {
                       style: const TextStyle(fontSize: 16))),
                   DataCell(Text(data['Room No'] ?? '',
                       style: const TextStyle(fontSize: 16))),
-                  DataCell(Text(formatDate(data['timestamp']),
+                  DataCell(Text(formatDate(data['Submitted Date']),
                       style: const TextStyle(fontSize: 16))),
-                  DataCell(Text(data['Status'] ?? '',
+                  DataCell(Text(data['User Status'] ?? '',
                       style: const TextStyle(fontSize: 16))),
                 ],
               );
@@ -162,9 +162,9 @@ class _MyTableState extends State<MyTable> {
       case 2:
         return 'Room No';
       case 3:
-        return 'timestamp';
+        return 'Submitted Date';
       case 4:
-        return 'Status';
+        return 'User Status';
       default:
         return '';
     }
