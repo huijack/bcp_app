@@ -341,24 +341,11 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  if (isLoading)
-                    Container(
-                      padding: const EdgeInsets.all(25),
-                      margin: const EdgeInsets.symmetric(horizontal: 25),
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(191, 0, 7, 100),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                        ),
-                      ),
-                    ),
-                  if (!isLoading)
-                    MyButton(
-                        onTap: () => resolveRequest(context),
-                        buttonText: 'Resolve Request'),
+                  MyButton(
+                    buttonText: 'Resolve Request',
+                    isLoading: isLoading,
+                    onTap: () => resolveRequest(context),
+                  ),
                 ],
               ),
             ),

@@ -284,25 +284,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 35),
-                  if (isLoading)
-                    Container(
-                      padding: const EdgeInsets.all(25),
-                      margin: const EdgeInsets.symmetric(horizontal: 25),
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(191, 0, 7, 100),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
-                        ),
-                      ),
-                    ),
-                  if (!isLoading)
-                    MyButton(
-                      buttonText: 'Sign In',
-                      onTap: signUserIn,
-                    ),
+                  MyButton(
+                    buttonText: 'Login',
+                    isLoading: isLoading,
+                    onTap: signUserIn,
+                  ),
                   const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -129,25 +129,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 allowNewLines: false,
               ),
               const SizedBox(height: 35),
-              if (isLoading)
-                Container(
-                  padding: const EdgeInsets.all(25),
-                  margin: const EdgeInsets.symmetric(horizontal: 25),
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(191, 0, 7, 100),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                    ),
-                  ),
-                )
-              else
-                MyButton(
-                  onTap: handlePasswordReset,
-                  buttonText: 'Send Password Reset Email',
-                )
+              MyButton(
+                buttonText: 'Reset Password',
+                isLoading: isLoading,
+                onTap: handlePasswordReset,
+              ),
             ],
           ),
         ),

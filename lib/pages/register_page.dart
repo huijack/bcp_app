@@ -183,27 +183,11 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                           const SizedBox(height: 35),
                           // register button
-                          if (isLoading)
-                            Container(
-                              padding: const EdgeInsets.all(25),
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 25),
-                              decoration: BoxDecoration(
-                                color: const Color.fromRGBO(191, 0, 7, 100),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Center(
-                                child: CircularProgressIndicator(
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Colors.white),
-                                ),
-                              ),
-                            ),
-                          if (!isLoading)
-                            MyButton(
-                              buttonText: 'Sign Up',
-                              onTap: handleSignUp,
-                            ),
+                          MyButton(
+                            onTap: handleSignUp,
+                            buttonText: 'Sign Up',
+                            isLoading: isLoading,
+                          ),
                           const SizedBox(height: 15),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 25),
