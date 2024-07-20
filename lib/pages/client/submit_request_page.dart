@@ -301,25 +301,11 @@ class _SubmitRequestPageState extends State<SubmitRequestPage> {
                   prefixIcon: Icons.note,
                 ),
                 const SizedBox(height: 40),
-                if (isLoading)
-                  Container(
-                    padding: const EdgeInsets.all(25),
-                    margin: const EdgeInsets.symmetric(horizontal: 25),
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(191, 0, 7, 100),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    ),
-                  ),
-                if (!isLoading)
-                  MyButton(
-                    onTap: () => submitRequest(context),
-                    buttonText: "Submit Request",
-                  ),
+                MyButton(
+                  onTap: () => submitRequest(context),
+                  buttonText: "Submit Request",
+                  isLoading: isLoading,
+                ),
                 const SizedBox(height: 25),
               ],
             ),

@@ -189,25 +189,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   prefixIcon: Icons.location_history,
                 ),
                 SizedBox(height: 30),
-                if (isLoading)
-                  Container(
-                    padding: const EdgeInsets.all(25),
-                    margin: const EdgeInsets.symmetric(horizontal: 25),
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(191, 0, 7, 100),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    ),
-                  ),
-                if (!isLoading)
-                  MyButton(
-                    buttonText: 'Sign In',
-                    onTap: () => updateProfile(context),
-                  ),
+                MyButton(
+                  onTap: () => updateProfile(context),
+                  buttonText: 'Update Profile',
+                  isLoading: isLoading,
+                ),
               ],
             ),
           )

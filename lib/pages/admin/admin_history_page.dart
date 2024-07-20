@@ -87,8 +87,10 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
 
                 // Sort requests by timestamp
                 requests.sort((a, b) {
-                  var aTimestamp = a['timestamp']?.toDate() ?? DateTime.now();
-                  var bTimestamp = b['timestamp']?.toDate() ?? DateTime.now();
+                  var aTimestamp =
+                      a['Verified Date']?.toDate() ?? DateTime.now();
+                  var bTimestamp =
+                      b['Verified Date']?.toDate() ?? DateTime.now();
                   return bTimestamp.compareTo(aTimestamp);
                 });
 
@@ -98,7 +100,7 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
                     var request = requests[index];
                     var requestId = request['Request ID']?.toString() ?? '';
                     var requestDate =
-                        request['Submitted Date']?.toDate() ?? DateTime.now();
+                        request['Verified Date']?.toDate() ?? DateTime.now();
                     var equipment = request['Equipment'] ?? 'Unknown';
                     var issues = request['Issues'] ?? 'No issues provided';
                     var imageUrl = request['Image URL'] ?? '';
@@ -127,7 +129,7 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'DATE: ${DateFormat('dd-MM-yyyy').format(requestDate)}',
+                              'VERIFIED DATE: ${DateFormat('dd-MM-yyyy').format(requestDate)}',
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),

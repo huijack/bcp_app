@@ -1,8 +1,12 @@
-import 'package:bcp_app/components/my_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bcp_app/pages/image_viewer_page.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+
+import '../../components/my_assignButton.dart';
+import '../../components/my_rejectButton.dart';
+import '../../mail/user_email.dart';
 
 class AssignTechnicianPage extends StatefulWidget {
   final QueryDocumentSnapshot request;
@@ -17,11 +21,18 @@ class AssignTechnicianPage extends StatefulWidget {
 }
 
 class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
+  bool isAssignLoading = false;
+  bool isRejectLoading = false;
   bool isLoading = false;
   String? selectedTechnician;
   String? selectedImportance;
   DateTime? dueDate;
   List<DocumentSnapshot> availableTechnicians = [];
+
+  final UserEmail emailSender = UserEmail(
+      stmpServer: 'smtp.gmail.com',
+      username: 'jacklim2626@gmail.com',
+      password: 'vtgyigbxfzkcgwxa');
 
   @override
   void initState() {
@@ -30,7 +41,6 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
   }
 
   Future<void> fetchAvaialbleTechnicians() async {
-
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('MaintenanceStaff')
@@ -208,6 +218,69 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
     }
   }
 
+  Future<void> rejectRequest() async {
+    setState(() {
+      isRejectLoading = true;
+    });
+
+    try {
+      // Get the document reference for the request
+      DocumentReference requestRef = widget.request.reference;
+
+      // Update the request document
+      await requestRef.update({
+        'Status': 'Rejected',
+        'User Status': 'Rejected',
+      });
+
+      // Send an email to the reporter
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('User')
+          .doc(widget.request['uId'])
+          .get();
+
+      final userEmailAddress = userSnapshot['Email'] as String;
+      final requestNumber = widget.request['Request ID'] ?? widget.request.id;
+
+      // Send email to user
+      await emailSender.sendEmail(
+        userEmailAddress,
+        'Request Status Update',
+        'Thank you for your request. We regret to inform you that your request (Request ID: $requestNumber) has been rejected.',
+      );
+
+      // Show a success message alert dialog
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Success'),
+            content: const Text('The request has been rejected successfully.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print('Error rejecting request: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Failed to reject request. Please try again.')),
+      );
+    } finally {
+      setState(() {
+        isRejectLoading = false;
+      });
+    }
+  }
+
   Future<void> assignTechnician() async {
     if (selectedTechnician == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -231,7 +304,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
     }
 
     setState(() {
-      isLoading = true;
+      isAssignLoading = true;
     });
 
     try {
@@ -242,6 +315,11 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
       DocumentReference technicianRef = FirebaseFirestore.instance
           .collection('MaintenanceStaff')
           .doc(selectedTechnician);
+
+      // send email to technician
+      final technicianSnapshot = await technicianRef.get();
+      final technicianEmailAddress = technicianSnapshot['Email'] as String;
+      final requestNumber = widget.request['Request ID'] ?? widget.request.id;
 
       // Start a batch write
       WriteBatch batch = FirebaseFirestore.instance.batch();
@@ -260,8 +338,15 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
       // Commit the batch
       await batch.commit();
 
+      // Send email to technician
+      await emailSender.sendEmail(
+        technicianEmailAddress,
+        'New Assignment',
+        'You have been assigned to a new request (Request ID: $requestNumber). Please complete the task by $dueDate.',
+      );
+
       // Show a success message alert dialog
-      showDialog(
+      await showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -279,7 +364,6 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
           );
         },
       );
-
     } catch (e) {
       print('Error updating request and technician availability: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -288,7 +372,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
       );
     } finally {
       setState(() {
-        isLoading = false;
+        isAssignLoading = false;
       });
     }
   }
@@ -387,26 +471,26 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
                       _buildDatePicker(),
                     ],
                   ),
-                  SizedBox(height: 16),
-                  if (isLoading)
-                    Container(
-                      padding: const EdgeInsets.all(25),
-                      margin: const EdgeInsets.symmetric(horizontal: 25),
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(191, 0, 7, 100),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: RejectButton(
+                          buttonText: 'Reject Request',
+                          onTap: rejectRequest,
+                          isLoading: isRejectLoading,
                         ),
                       ),
-                    ),
-                  if (!isLoading)
-                    MyButton(
-                      onTap: assignTechnician,
-                      buttonText: 'Assign Technician',
-                    ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: AssignButton(
+                          buttonText: 'Assign Technician',
+                          onTap: assignTechnician,
+                          isLoading: isAssignLoading,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
