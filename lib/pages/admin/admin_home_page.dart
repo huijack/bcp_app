@@ -1,17 +1,12 @@
 import 'package:bcp_app/pages/admin/pending_requests_page.dart';
 import 'package:bcp_app/pages/admin/fixed_requests_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bcp_app/pages/admin/admin_history_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../components/my_card.dart';
-import 'blockA_status_page.dart';
-import 'blockB_status_page.dart';
-import 'blockC_status_page.dart';
-import 'blockE_status_page.dart';
-import 'blockG_status_page.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({
@@ -40,6 +35,48 @@ class _AdminHomePageState extends State<AdminHomePage> {
     });
 
     print('User email: $userEmail');
+  }
+
+  Stream<Map<String, int>> getTotalRequestCounts() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return Stream.value({});
+    }
+
+    final userId = user.uid;
+
+    return FirebaseFirestore.instance
+        .collection('Admin')
+        .doc(userId)
+        .get()
+        .asStream()
+        .asyncExpand((adminDoc) {
+      if (adminDoc.exists) {
+        return FirebaseFirestore.instance
+            .collection('Request')
+            .snapshots()
+            .map((snapshot) {
+          int pendingCount = 0;
+          int fixedCount = 0;
+          for (var doc in snapshot.docs) {
+            String status = doc['Status'];
+            if (status == 'Pending') {
+              pendingCount++;
+            } else if (status == 'Fixed') {
+              fixedCount++;
+            }
+          }
+          return {
+            'Pending': pendingCount,
+            'Fixed': fixedCount,
+          };
+        });
+      } else {
+        print('Admin document not found');
+        return Stream.value({});
+      }
+    });
   }
 
   @override
@@ -277,32 +314,46 @@ class _AdminHomePageState extends State<AdminHomePage> {
                           topRight: Radius.circular(30),
                         ),
                       ),
-                      height: height * 0.75,
+                      // height: height * 0.75,
                       width: width,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Column(
                           children: [
-                            GridView.count(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              children: [
-                                MyCard(
-                                  icon: FontAwesomeIcons.personDigging,
-                                  text: 'Pending Requests',
-                                  onTap: () => _assignTechnician(context),
-                                  requestCount: 0,
-                                ),
-                                MyCard(
-                                  icon: FontAwesomeIcons.flagCheckered,
-                                  text: 'Fixed Requests',
-                                  onTap: () => _verifyRequests(context),
-                                  requestCount: 0,
-                                ),
-                              ],
+                            StreamBuilder<Map<String, int>>(
+                              stream: getTotalRequestCounts(),
+                              builder: ((context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircularProgressIndicator();
+                                }
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                final counts = snapshot.data ?? {};
+                                return GridView.count(
+                                  padding: EdgeInsets.symmetric(vertical: 30.0),
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 16,
+                                  mainAxisSpacing: 16,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: [
+                                    MyCard(
+                                      icon: FontAwesomeIcons.personDigging,
+                                      text: 'Pending Requests',
+                                      onTap: () => _assignTechnician(context),
+                                      requestCount: counts['Pending'] ?? 0,
+                                    ),
+                                    MyCard(
+                                      icon: FontAwesomeIcons.flagCheckered,
+                                      text: 'Fixed Requests',
+                                      onTap: () => _verifyRequests(context),
+                                      requestCount: counts['Fixed'] ?? 0,
+                                    ),
+                                  ],
+                                );
+                              }),
                             )
                           ],
                         ),

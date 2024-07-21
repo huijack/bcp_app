@@ -91,6 +91,34 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
       return;
     }
 
+    // show alert dialog to confirm request resolution
+    bool confirmResolve = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Resolve Request'),
+          content: const Text(
+              'Are you sure you want to resolve this request? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Resolve'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmResolve != true) return;
+
     try {
       setState(() {
         isLoading = true;
@@ -328,8 +356,53 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
                               ),
                             );
                           },
-                          child: _buildInfoItem(
-                              'Image', 'Tap to view', Icons.image),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.image,
+                                    color: Colors.red[900], size: 20),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Image',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Tap to view',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.blue[700],
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            size: 16,
+                                            color: Colors.blue[700],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                     ],
                   ),
