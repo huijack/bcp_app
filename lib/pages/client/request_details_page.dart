@@ -127,16 +127,23 @@ class RequestDetailsPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ImageViewerPage(imageUrl: imageName)
-                                ),
+                                    builder: (context) =>
+                                        ImageViewerPage(imageUrl: imageName)),
                               );
                             },
-                            child: const Text(
-                              'Tap to view image',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            child: const Row(
+                              children: [
+                                Text(
+                                  'Tap to view image',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Icon(Icons.arrow_forward,
+                                    size: 16, color: Colors.blue),
+                              ],
                             ),
                           ),
                         )),
@@ -157,12 +164,19 @@ class RequestDetailsPage extends StatelessWidget {
                                   ),
                                 );
                               },
-                              child: const Text(
-                                'Tap to view image',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              child: const Row(
+                                children: [
+                                  Text(
+                                    'Tap to view image',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Icon(Icons.arrow_forward,
+                                      size: 16, color: Colors.blue),
+                                ],
                               ),
                             ),
                           ),

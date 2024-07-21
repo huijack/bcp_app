@@ -28,7 +28,8 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirm Status Update'),
-          content: const Text('Are you sure you want to verify this request?'),
+          content: const Text(
+              'Are you sure you want to verify this request? This action cannot be undone.'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -251,12 +252,19 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                               ),
                             );
                           },
-                          child: const Text(
-                            'Tap to view image',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          child: const Row(
+                            children: [
+                              Text(
+                                'Tap to view image',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                              Icon(Icons.arrow_forward,
+                                  size: 16, color: Colors.blue),
+                            ],
                           ),
                         ),
                       ),
@@ -310,18 +318,24 @@ class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          ImageViewerPage(
-                                              imageUrl: resolvedImageUrl),
+                                      builder: (context) => ImageViewerPage(
+                                          imageUrl: resolvedImageUrl),
                                     ),
                                   );
                                 },
-                                child: const Text(
-                                  'Tap to view image',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                child: const Row(
+                                  children: [
+                                    Text(
+                                      'Tap to view image',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Icon(Icons.arrow_forward,
+                                        size: 16, color: Colors.blue),
+                                  ],
                                 ),
                               ),
                             ),

@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _refreshData() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {});
   }
@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SubmitRequestPage(),
+        builder: (context) => const SubmitRequestPage(),
       ),
     );
   }
@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TrackRequestStatusPage(),
+        builder: (context) => const TrackRequestStatusPage(),
       ),
     );
   }
@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ViewPastRequestsPage(),
+        builder: (context) => const ViewPastRequestsPage(),
       ),
     );
   }
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditProfilePage(),
+        builder: (context) => const EditProfilePage(),
       ),
     );
   }
@@ -136,7 +136,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
@@ -248,9 +247,9 @@ class _HomePageState extends State<HomePage> {
           onRefresh: _refreshData,
           color: Colors.red[900],
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color.fromRGBO(255, 154, 157, 50),
               ),
               child: Column(
@@ -347,11 +346,11 @@ class _HomePageState extends State<HomePage> {
                   Container(
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                         )),
-                    height: height * 0.75,
+                    // height: height * 0.75,
                     width: width,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -362,6 +361,7 @@ class _HomePageState extends State<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               GridView.count(
+                                padding: EdgeInsets.only(top: 30.0),
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
@@ -386,7 +386,7 @@ class _HomePageState extends State<HomePage> {
                                   // View Past Requests
                                   MyCard(
                                     icon: Icons.history,
-                                    text: "View Past Requests",
+                                    text: "Past Fixed Requests",
                                     onTap: () => _viewPastRequests(context),
                                   ),
 

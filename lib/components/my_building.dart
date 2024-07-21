@@ -111,20 +111,13 @@ class _MyBuildingState extends State<MyBuilding> {
                       style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black),
+                          color: Colors.white),
                     ),
                   ),
                 ),
               ),
             ),
             _buildRequestCards(overdueRequests, isOverdue: true),
-            const Divider(
-              color: Colors.grey, // Divider color
-              height: 20, // Space before and after the divider
-              thickness: 2, // Thickness of the divider
-              indent: 16, // Left padding
-              endIndent: 16, // Right padding
-            ),
           ],
           if (activeRequests.isNotEmpty) ...[
             Padding(

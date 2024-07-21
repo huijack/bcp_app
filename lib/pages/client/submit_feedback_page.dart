@@ -13,6 +13,7 @@ class SubmitFeedbackPage extends StatefulWidget {
 class _SubmitFeedbackPageState extends State<SubmitFeedbackPage> {
   int _rating = 0;
   final TextEditingController _feedbackController = TextEditingController();
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -20,30 +21,50 @@ class _SubmitFeedbackPageState extends State<SubmitFeedbackPage> {
     super.dispose();
   }
 
-  void _submitFeedback() async {
+  Future<void> _submitFeedback(BuildContext context) async {
     // Get the current user
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null && _rating > 0) {
+      
       try {
+        setState(() {
+          isLoading = true;
+        });
+
         await FirebaseFirestore.instance.collection('Feedback').add({
           'userId': user.uid,
           'rating': _rating,
           'feedback': _feedbackController.text,
           'timestamp': FieldValue.serverTimestamp(),
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-                  'Feedback submitted successfully! Thank you for your feedback.')),
+                
+        // show an alert dialog, after clicking ok, clear the form
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Feedback Submitted'),
+              content: const Text('Thank you for your feedback!'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
         );
-
+        
         // Clear the form
         setState(() {
+          isLoading = false;
           _rating = 0;
           _feedbackController.clear();
         });
+
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -56,11 +77,6 @@ class _SubmitFeedbackPageState extends State<SubmitFeedbackPage> {
             content: Text('Please provide a rating before submitting.')),
       );
     }
-  }
-
-  void submitFeedback(BuildContext context) {
-    // submit feedback
-    _submitFeedback();
   }
 
   @override
@@ -143,8 +159,9 @@ class _SubmitFeedbackPageState extends State<SubmitFeedbackPage> {
               ),
               const SizedBox(height: 30),
               MyButton(
-                onTap: () => submitFeedback(context),
+                onTap: () => _submitFeedback(context),
                 buttonText: 'Submit Feedback',
+                isLoading: isLoading,
               )
             ],
           ),

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 
+import '../admin/admin_history_page.dart';
 import '../admin/blockA_status_page.dart';
 import '../admin/blockB_status_page.dart';
 import '../admin/blockC_status_page.dart';
@@ -43,6 +45,121 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
     await Future.delayed(Duration(seconds: 2));
 
     setState(() {});
+  }
+
+  Stream<List<QueryDocumentSnapshot>> getOverdueRequests() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return Stream.value([]);
+    }
+
+    final userId = user.uid;
+    final now = DateTime.now();
+
+    return FirebaseFirestore.instance
+        .collection('Request')
+        .where('Status', isEqualTo: 'Assigned')
+        .where('Assigned To', isEqualTo: userId)
+        .where('Due Date', isLessThan: now)
+        .snapshots()
+        .map((snapshot) => snapshot.docs);
+  }
+
+  Widget _buildOverdueRequestsContainer() {
+    return StreamBuilder<List<QueryDocumentSnapshot>>(
+      stream: getOverdueRequests(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        final overdueRequests = snapshot.data ?? [];
+
+        if (overdueRequests.isEmpty) {
+          return SizedBox
+              .shrink(); // Don't show anything if there are no overdue requests
+        }
+
+        return Container(
+          margin: EdgeInsets.only(top: 16),
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.red[100],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.red[900]!, width: 2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Overdue Requests',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red[900],
+                ),
+              ),
+              SizedBox(height: 8),
+              ...overdueRequests.map((request) {
+                final requestId = request['Request ID'];
+                final dueDate = (request['Due Date'] as Timestamp).toDate();
+                final building = request['Building'];
+                return Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: RichText(
+                        text: TextSpan(
+                      text: 'Request ID: ',
+                      style: TextStyle(
+                        color: Colors.red[900],
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: requestId.toString(),
+                          style: TextStyle(
+                            color: Colors.red[900],
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' - Due Date: ',
+                          style: TextStyle(
+                            color: Colors.red[900],
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: DateFormat.yMd().format(dueDate),
+                          style: TextStyle(
+                            color: Colors.red[900],
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' - Building: ',
+                          style: TextStyle(
+                            color: Colors.red[900],
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: building,
+                          style: TextStyle(
+                            color: Colors.red[900],
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    )));
+              }).toList(),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> showLogoutConfirmation() async {
@@ -269,7 +386,7 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                             right: 15,
                           ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Builder(builder: (context) {
                                 return InkWell(
@@ -283,6 +400,22 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                                   ),
                                 );
                               }),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AdminHistoryPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(
+                                  Icons.history,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -335,13 +468,14 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                         topRight: Radius.circular(30),
                       ),
                     ),
-                    height: height * 0.75,
+                    // height: height * 0.75,
                     width: width,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          _buildOverdueRequestsContainer(),
                           StreamBuilder<Map<String, int>>(
                             stream: getAssignedRequestCounts(),
                             builder: (context, snapshot) {
@@ -354,6 +488,7 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                               }
                               final counts = snapshot.data ?? {};
                               return GridView.count(
+                                padding: EdgeInsets.symmetric(vertical: 30.0),
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,

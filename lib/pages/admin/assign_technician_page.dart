@@ -75,7 +75,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
           ),
         ),
         ...children,
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -87,7 +87,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: Colors.red[900], size: 20),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,10 +100,10 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
                     color: Colors.grey[600],
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   value,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
@@ -141,7 +141,8 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
             borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: Colors.red[900]!),
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
@@ -175,7 +176,8 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
             borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: Colors.red[900]!),
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
@@ -197,7 +199,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
             dueDate == null
                 ? 'Select Due Date'
                 : DateFormat('yyyy-MM-dd').format(dueDate!),
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
         ),
       ),
@@ -207,18 +209,65 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: dueDate ?? DateTime.now(),
+      initialDate: _nextWeekday(DateTime.now()),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      selectableDayPredicate: (DateTime date) {
+        // Allow selection only if it's a weekday (Monday to Friday)
+        return date.weekday < 6;
+      },
     );
     if (picked != null && picked != dueDate) {
+      final DateTime dueDateTime = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        18,
+        0,
+      );
       setState(() {
-        dueDate = picked;
+        dueDate = dueDateTime;
       });
     }
   }
 
+  DateTime _nextWeekday(DateTime date) {
+    DateTime nextDay = date.add(const Duration(days: 1));
+    while (nextDay.weekday > 5) {
+      nextDay = nextDay.add(const Duration(days: 1));
+    }
+    return nextDay;
+  }
+
   Future<void> rejectRequest() async {
+    bool confirmReject = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirm Reject'),
+            content:
+                const Text('Are you sure you want to reject this request?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: const Text('Reject'),
+              ),
+            ],
+          );
+        });
+
+    if (!confirmReject) {
+      return;
+    }
+
     setState(() {
       isRejectLoading = true;
     });
@@ -300,6 +349,34 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a due date')),
       );
+      return;
+    }
+
+    bool confirmAssign = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirm Assignment'),
+            content:
+                const Text('Are you sure you want to assign this request?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: const Text('Assign'),
+              ),
+            ],
+          );
+        });
+
+    if (!confirmAssign) {
       return;
     }
 
@@ -388,7 +465,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.red[900],
         elevation: 0,
         centerTitle: true,
@@ -437,8 +514,53 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
                               ),
                             );
                           },
-                          child: _buildInfoItem(
-                              'Image', 'Tap to view', Icons.image),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.image,
+                                    color: Colors.red[900], size: 20),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Image',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Tap to view',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.blue[700],
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            size: 16,
+                                            color: Colors.blue[700],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                     ],
                   ),

@@ -18,6 +18,7 @@ class RequestCountsCard extends StatelessWidget {
         .map((querySnapshot) {
       int pendingCount = 0;
       int fixedCount = 0;
+      int rejectedCount = 0;
 
       for (var doc in querySnapshot.docs) {
         final status = doc['User Status'];
@@ -25,13 +26,15 @@ class RequestCountsCard extends StatelessWidget {
           pendingCount++;
         } else if (status == 'Fixed') {
           fixedCount++;
+        } else if (status == 'Rejected') {
+          rejectedCount++;
         }
       }
 
       return {
         'pending': pendingCount,
         'fixed': fixedCount,
-        'total': pendingCount + fixedCount,
+        'total': pendingCount + fixedCount + rejectedCount,
       };
     });
   }

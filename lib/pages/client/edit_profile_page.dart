@@ -44,6 +44,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> updateProfile(BuildContext context) async {
+
     setState(() {
       isLoading = true;
     });
@@ -64,7 +65,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           'State': stateController.text,
         });
         // Alert dialog to show success message
-        showDialog(
+        await showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(

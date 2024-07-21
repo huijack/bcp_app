@@ -33,7 +33,7 @@ class _ViewPastRequestsPageState extends State<ViewPastRequestsPage> {
         scrolledUnderElevation: 0.0,
         centerTitle: true,
         title: const Text(
-          'Past Requests',
+          'Past Fixed Requests',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

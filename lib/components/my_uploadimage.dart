@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 class MyUploadImage extends StatefulWidget {
   final Function(XFile? image)? onImagePicked;
 
-  const MyUploadImage({Key? key, this.onImagePicked}) : super(key: key);
+  const MyUploadImage({super.key, this.onImagePicked});
 
   @override
   State<MyUploadImage> createState() => _MyUploadImageState();
