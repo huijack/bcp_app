@@ -5,6 +5,7 @@ import 'package:bcp_app/pages/auth_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 
@@ -33,9 +34,9 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> sendEmail(String email, String otp) async {
-    final smtpServer = gmail('jacklim2626@gmail.com', 'vtgyigbxfzkcgwxa');
+    final smtpServer = gmail(dotenv.env['EMAIL_USERNAME']!, dotenv.env['EMAIL_PASSWORD']!);
     final message = Message()
-      ..from = const Address('jacklim2626@gmail.com', 'UCSI Report')
+      ..from = Address(dotenv.env['EMAIL_USERNAME']!, 'UCSI Report')
       ..recipients.add(email)
       ..subject = 'UCSI Report OTP Verification'
       ..text = 'Your OTP code is $otp. Please do not share this code with anyone.';

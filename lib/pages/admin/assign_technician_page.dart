@@ -29,10 +29,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
   DateTime? dueDate;
   List<DocumentSnapshot> availableTechnicians = [];
 
-  final UserEmail emailSender = UserEmail(
-      stmpServer: 'smtp.gmail.com',
-      username: 'jacklim2626@gmail.com',
-      password: 'vtgyigbxfzkcgwxa');
+  final UserEmail emailSender = UserEmail.fromEnv();
 
   @override
   void initState() {
