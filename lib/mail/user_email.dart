@@ -5,19 +5,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserEmail {
-  final String stmpServer;
+  final String smtpServer;
   final String username;
   final String password;
 
   UserEmail({
-    required this.stmpServer,
+    required this.smtpServer,
     required this.username,
     required this.password,
   });
 
   factory UserEmail.fromEnv() {
     return UserEmail(
-      stmpServer: dotenv.env['STMP_SERVER']!,
+      smtpServer: dotenv.env['SMTP_SERVER']!,
       username: dotenv.env['EMAIL_USERNAME']!,
       password: dotenv.env['EMAIL_PASSWORD']!,
     );
