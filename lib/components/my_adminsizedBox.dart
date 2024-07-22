@@ -16,10 +16,7 @@ class MyAdminSizedBox extends StatefulWidget {
 class _MyAdminSizedBoxState extends State<MyAdminSizedBox> {
   late String status;
   bool isLoading = false;
-  final UserEmail emailSender = UserEmail(
-      stmpServer: 'smtp.gmail.com',
-      username: 'jacklim2626@gmail.com',
-      password: 'vtgyigbxfzkcgwxa');
+  final UserEmail emailSender = UserEmail.fromEnv();
 
   Future<void> updateStatus() async {
     // Show confirmation dialog
