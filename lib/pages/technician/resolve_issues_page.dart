@@ -70,10 +70,9 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
           widget.onImagePicked!(_pickedImage);
         }
 
-        print('Image picked: ${_pickedImage?.path}');
       }
     } catch (e) {
-      print('Error picking image: $e');
+      debugPrint('Error picking image: $e');
     } finally {
       setState(() {
         _isImagePickerActive = false;
@@ -128,7 +127,7 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
       if (user == null) {
-        print('User is not authenticated');
+        debugPrint('User not authenticated');
         return;
       }
 
@@ -185,7 +184,7 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
         },
       );
     } catch (e) {
-      print('Error resolving request: $e');
+      debugPrint('Error resolving request: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('An error occurred. Please try again later.'),
@@ -205,7 +204,7 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.image, color: Colors.red[900], size: 20),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,20 +217,20 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
                     color: Colors.grey[600],
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   _imageName ?? 'No image selected',
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: _pickImage,
-                  child: Text(
-                      _pickedImage == null ? 'Select Image' : 'Change Image'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red[900],
                     foregroundColor: Colors.white,
                   ),
+                  child: Text(
+                      _pickedImage == null ? 'Select Image' : 'Change Image'),
                 ),
               ],
             ),
@@ -257,7 +256,7 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
           ),
         ),
         ...children,
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -269,7 +268,7 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: Colors.red[900], size: 20),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,10 +281,10 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
                     color: Colors.grey[600],
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   value,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
@@ -306,7 +305,7 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.red[900],
         elevation: 0,
         centerTitle: true,
@@ -406,7 +405,7 @@ class _ResolveIssuesPageState extends State<ResolveIssuesPage> {
                         ),
                     ],
                   ),
-                  Divider(),
+                  const Divider(),
                   _buildInfoSection(
                     'Resolve Requests',
                     [

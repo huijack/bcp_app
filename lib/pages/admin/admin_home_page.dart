@@ -33,8 +33,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
     setState(() {
       userEmail = user?.email;
     });
-
-    print('User email: $userEmail');
   }
 
   Stream<Map<String, int>> getTotalRequestCounts() {
@@ -73,7 +71,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
           };
         });
       } else {
-        print('Admin document not found');
         return Stream.value({});
       }
     });
@@ -120,8 +117,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     try {
       await FirebaseAuth.instance.signOut();
     } catch (e) {
-      // Handle any errors here
-      print('Error logging out: $e');
+      debugPrint('Error logging out: $e');
     } finally {
       setState(() {
         _isLoggingOut = false;
@@ -159,12 +155,14 @@ class _AdminHomePageState extends State<AdminHomePage> {
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    bool isKeyBoardOpen = MediaQuery.of(context).viewInsets.bottom != 0.0;
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
         await showLogoutConfirmation();
-        return false;
       },
       child: Scaffold(
           drawer: Drawer(
@@ -252,7 +250,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const AdminHistoryPage(),
+                                            const AdminHistoryPage(
+                                          isAdmin: true,
+                                        ),
                                       ),
                                     );
                                   },
@@ -332,7 +332,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                 }
                                 final counts = snapshot.data ?? {};
                                 return GridView.count(
-                                  padding: EdgeInsets.symmetric(vertical: 30.0),
+                                  padding: const EdgeInsets.symmetric(vertical: 30.0),
                                   crossAxisCount: 2,
                                   crossAxisSpacing: 16,
                                   mainAxisSpacing: 16,

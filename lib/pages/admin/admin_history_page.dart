@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +8,12 @@ import '../../components/my_debouncer.dart';
 import '../../components/my_searchbar.dart'; // Import your search bar widget here
 
 class AdminHistoryPage extends StatefulWidget {
-  const AdminHistoryPage({super.key});
+  final bool isAdmin;
+
+  const AdminHistoryPage({
+    super.key,
+    required this.isAdmin,
+  });
 
   @override
   State<AdminHistoryPage> createState() => _AdminHistoryPageState();
@@ -23,6 +29,23 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
   String _searchText = '';
   final Debouncer _debouncer = Debouncer(milliseconds: 500);
 
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+  Stream<QuerySnapshot> _getRequestStream() {
+    if (widget.isAdmin) {
+      return FirebaseFirestore.instance
+          .collection('Request')
+          .where('Status', isEqualTo: 'Verified')
+          .snapshots();
+    } else {
+      return FirebaseFirestore.instance
+          .collection('Request')
+          .where('Status', isEqualTo: 'Verified')
+          .where('Assigned To', isEqualTo: currentUserId)
+          .snapshots();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -32,9 +55,9 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
         backgroundColor: Colors.grey[200],
         scrolledUnderElevation: 0.0,
         centerTitle: true,
-        title: const Text(
-          'View History',
-          style: TextStyle(
+        title: Text(
+          widget.isAdmin ? 'Admin History' : 'My Assigned Requests',
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Color.fromRGBO(191, 0, 6, 0.815),
@@ -58,10 +81,7 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('Request')
-                  .where('Status', isEqualTo: 'Verified')
-                  .snapshots(),
+              stream: _getRequestStream(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -70,8 +90,10 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
-                    child: Text('No verified requests found.'),
+                  return Center(
+                    child: Text(widget.isAdmin
+                        ? 'No requests found.'
+                        : 'No assigned requests found for you'),
                   );
                 }
 
@@ -101,12 +123,6 @@ class _AdminHistoryPageState extends State<AdminHistoryPage>
                     var requestId = request['Request ID']?.toString() ?? '';
                     var requestDate =
                         request['Verified Date']?.toDate() ?? DateTime.now();
-                    var equipment = request['Equipment'] ?? 'Unknown';
-                    var issues = request['Issues'] ?? 'No issues provided';
-                    var imageUrl = request['Image URL'] ?? '';
-                    var remarks = request['Remarks'] ?? '';
-                    var roomNo = request['Room No'] ?? 'Unknown';
-                    var reporterName = request['Reporter Name'] ?? '';
 
                     return Card(
                       elevation: 0,

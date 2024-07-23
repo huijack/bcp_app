@@ -42,10 +42,9 @@ class _RegisterPageState extends State<RegisterPage> {
       ..text = 'Your OTP code is $otp. Please do not share this code with anyone.';
 
     try {
-      final sendReport = await send(message, smtpServer);
-      print('Message sent: ' + sendReport.toString());
+      await send(message, smtpServer);
     } on MailerException catch (e) {
-      print('Message not sent. \n' + e.toString());
+      debugPrint('Message not sent. $e');
     }
   }
 
