@@ -215,15 +215,21 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
       },
     );
     if (picked != null && picked != dueDate) {
+      const localTimeOffset = Duration(hours: 8);
+      final localDateTime = picked.toUtc().add(localTimeOffset);
+
       final DateTime dueDateTime = DateTime(
-        picked.year,
-        picked.month,
-        picked.day,
+        localDateTime.year,
+        localDateTime.month,
+        localDateTime.day,
         18,
         0,
       );
+
+      final utcDueDate = dueDateTime.subtract(localTimeOffset);
+
       setState(() {
-        dueDate = dueDateTime;
+        dueDate = utcDueDate;
       });
     }
   }

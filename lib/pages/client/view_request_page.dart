@@ -104,7 +104,6 @@ class _ViewPastRequestsPageState extends State<ViewPastRequestsPage> {
                         var requestId = request['Request ID']?.toString() ?? '';
                         var requestDate =
                             request['Submitted Date']?.toDate() ?? DateTime.now();
-                        var requestStatus = request['User Status']?.toString() ?? '';
 
                         return Card(
                           elevation: 0,

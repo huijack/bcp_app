@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 
 import '../../components/my_card.dart';
 import '../../components/my_requestcounts.dart';
@@ -128,7 +127,7 @@ class _HomePageState extends State<HomePage> {
       await FirebaseAuth.instance.signOut();
     } catch (e) {
       // Handle any errors here
-      print('Error logging out: $e');
+      debugPrint('Error logging out: $e');
     } finally {
       setState(() {
         _isLoggingOut = false;
@@ -141,10 +140,13 @@ class _HomePageState extends State<HomePage> {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
         await showLogoutConfirmation();
-        return false;
       },
       child: Scaffold(
         drawer: Drawer(
@@ -254,7 +256,7 @@ class _HomePageState extends State<HomePage> {
               ),
               child: Column(
                 children: [
-                  Container(
+                  SizedBox(
                     height: height * 0.25,
                     width: width,
                     child: Column(
@@ -285,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ProfilePage(),
+                                      builder: (context) => const ProfilePage(),
                                     ),
                                   );
                                 },
@@ -361,13 +363,13 @@ class _HomePageState extends State<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               GridView.count(
-                                padding: EdgeInsets.only(top: 30.0),
+                                padding: const EdgeInsets.only(top: 30.0),
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
                                 shrinkWrap:
                                     true, // Use shrinkWrap to take the natural size
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 children: [
                                   // Submit a Request
                                   MyCard(

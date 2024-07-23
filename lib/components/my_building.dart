@@ -84,12 +84,15 @@ class _MyBuildingState extends State<MyBuilding> {
 
   Widget _buildRequestList(List<QueryDocumentSnapshot> requests) {
     if (widget.status == 'Assigned') {
-      var now = DateTime.now();
+      var now = DateTime.now().toUtc();
+      const localOffset = Duration(hours: 8);
+      final localNow = now.add(localOffset);
+      
       var overdueRequests = requests
-          .where((r) => (r['Due Date'] as Timestamp).toDate().isBefore(now))
+          .where((r) => (r['Due Date'] as Timestamp).toDate().isBefore(localNow))
           .toList();
       var activeRequests = requests
-          .where((r) => !(r['Due Date'] as Timestamp).toDate().isBefore(now))
+          .where((r) => !(r['Due Date'] as Timestamp).toDate().isBefore(localNow))
           .toList();
 
       return Column(
@@ -201,7 +204,6 @@ class _MyBuildingState extends State<MyBuilding> {
               var dueDate = request['Due Date'] is Timestamp
                   ? (request['Due Date'] as Timestamp).toDate()
                   : null;
-
 
               var fixedDate = request['Resolved Date'] is Timestamp
                   ? (request['Resolved Date'] as Timestamp).toDate()

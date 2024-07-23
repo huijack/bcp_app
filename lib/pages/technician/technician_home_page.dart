@@ -42,7 +42,7 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
   }
 
   Future<void> _refreshData() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {});
   }
@@ -55,13 +55,15 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
     }
 
     final userId = user.uid;
-    final now = DateTime.now();
+    final now = DateTime.now().toUtc();
+    const localOffset = Duration(hours: 8);
+    final localNow = now.add(localOffset);
 
     return FirebaseFirestore.instance
         .collection('Request')
         .where('Status', isEqualTo: 'Assigned')
         .where('Assigned To', isEqualTo: userId)
-        .where('Due Date', isLessThan: now)
+        .where('Due Date', isLessThan: localNow)
         .snapshots()
         .map((snapshot) => snapshot.docs);
   }
@@ -71,7 +73,7 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
       stream: getOverdueRequests(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
         if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
@@ -79,13 +81,13 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
         final overdueRequests = snapshot.data ?? [];
 
         if (overdueRequests.isEmpty) {
-          return SizedBox
+          return const SizedBox
               .shrink(); // Don't show anything if there are no overdue requests
         }
 
         return Container(
-          margin: EdgeInsets.only(top: 16),
-          padding: EdgeInsets.all(16),
+          margin: const EdgeInsets.only(top: 16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.red[100],
             borderRadius: BorderRadius.circular(8),
@@ -102,7 +104,7 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                   color: Colors.red[900],
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               ...overdueRequests.map((request) {
                 final requestId = request['Request ID'];
                 final dueDate = (request['Due Date'] as Timestamp).toDate();
@@ -154,7 +156,7 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                         ),
                       ],
                     )));
-              }).toList(),
+              }),
             ],
           ),
         );
@@ -199,7 +201,7 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
       await FirebaseAuth.instance.signOut();
     } catch (e) {
       // Handle any errors here
-      print('Error logging out: $e');
+      debugPrint('Error logging out: $e');
     } finally {
       setState(() {
         _isLoggingOut = false;
@@ -302,10 +304,13 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
         await showLogoutConfirmation();
-        return false;
       },
       child: Scaffold(
         drawer: Drawer(
@@ -367,14 +372,14 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
           onRefresh: _refreshData,
           color: Colors.red[900],
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color.fromRGBO(255, 154, 157, 50),
               ),
               child: Column(
                 children: [
-                  Container(
+                  SizedBox(
                     height: height * 0.25,
                     width: width,
                     child: Column(
@@ -406,7 +411,9 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const AdminHistoryPage(),
+                                          const AdminHistoryPage(
+                                            isAdmin: false,
+                                          ),
                                     ),
                                   );
                                 },
@@ -463,7 +470,7 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(30),
                         topRight: Radius.circular(30),
                       ),
@@ -488,12 +495,12 @@ class _MyTechnicianHomePageState extends State<MyTechnicianHomePage> {
                               }
                               final counts = snapshot.data ?? {};
                               return GridView.count(
-                                padding: EdgeInsets.symmetric(vertical: 30.0),
+                                padding: const EdgeInsets.symmetric(vertical: 30.0),
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
                                 shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 children: [
                                   MyCard(
                                     icon: FontAwesomeIcons.a,
