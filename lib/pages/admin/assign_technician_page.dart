@@ -418,11 +418,13 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
       // Commit the batch
       await batch.commit();
 
+      final localDueDate = dueDate!.add(const Duration(hours: 8));
+
       // Send email to technician
       await emailSender.sendEmail(
         technicianEmailAddress,
         'New Assignment',
-        'You have been assigned to a new request (Request ID: $requestNumber). Please complete the task by $dueDate.',
+        'You have been assigned to a new request (Request ID: $requestNumber). Please complete the task by ${DateFormat('yyyy-MM-dd HH:mm').format(localDueDate)}.',
       );
 
       // Show a success message alert dialog
