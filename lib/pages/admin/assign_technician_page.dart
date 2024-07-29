@@ -49,7 +49,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
         isLoading = false;
       });
     } catch (e) {
-      print('Error fetching technicians: $e');
+      debugPrint('Error fetching technicians: $e');
       setState(() {
         isLoading = false;
       });
@@ -321,7 +321,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
         },
       );
     } catch (e) {
-      print('Error rejecting request: $e');
+      debugPrint('Error rejecting request: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Failed to reject request. Please try again.')),
@@ -447,7 +447,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
         },
       );
     } catch (e) {
-      print('Error updating request and technician availability: $e');
+      debugPrint('Error updating request and technician availability: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Failed to assign technician. Please try again.')),
@@ -569,7 +569,7 @@ class _AssignTechnicianPageState extends State<AssignTechnicianPage> {
                         ),
                     ],
                   ),
-                  Divider(),
+                  const Divider(),
                   _buildInfoSection(
                     'Assignment Details',
                     [

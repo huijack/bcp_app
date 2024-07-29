@@ -24,6 +24,12 @@ class MyExpansionTile extends StatelessWidget {
               color: Color.fromRGBO(191, 0, 6, 0.815),
             ),
           ),
+          backgroundColor: Colors.grey[50],
+          collapsedBackgroundColor: Colors.white,
+          iconColor: const Color.fromRGBO(191, 0, 6, 0.815),
+          collapsedIconColor: Colors.grey,
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          childrenPadding: EdgeInsets.zero,
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -33,12 +39,6 @@ class MyExpansionTile extends StatelessWidget {
               ),
             ),
           ],
-          backgroundColor: Colors.grey[50],
-          collapsedBackgroundColor: Colors.white,
-          iconColor: const Color.fromRGBO(191, 0, 6, 0.815),
-          collapsedIconColor: Colors.grey,
-          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          childrenPadding: EdgeInsets.zero,
         ),
       ),
     );

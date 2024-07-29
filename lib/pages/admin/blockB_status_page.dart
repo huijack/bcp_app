@@ -14,7 +14,7 @@ class BlockBStatusPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MyBuilding(
       buildingName: 'Block B',
-      equipmentOrder: [
+      equipmentOrder: const [
         'Projector',
         'Air Conditioner',
         'Fan',

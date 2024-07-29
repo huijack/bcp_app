@@ -25,7 +25,7 @@ class MyButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
           ),
         ),
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
           child: Center(
             child: isLoading

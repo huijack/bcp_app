@@ -32,7 +32,7 @@ class TrackRequestStatusPage extends StatelessWidget {
               children: [
                 RequestCountsCard(userId: userId),
                 const SizedBox(height: 20),
-                MyTable(),
+                const MyTable(),
               ],
             ),
           ),

@@ -24,8 +24,6 @@ class _HomePageLoaderState extends State<HomePageLoader> {
 
   Future _fetchUsername() async {
     final user = FirebaseAuth.instance.currentUser;
-    print('Current user: ${user?.email}'); // Debug print
-
     if (user != null) {
       try {
         // Check if the user is admin
@@ -81,7 +79,7 @@ class _HomePageLoaderState extends State<HomePageLoader> {
           }
         }
       } catch (e) {
-        print('Error fetching user data: $e');
+        debugPrint('Error fetching user data: $e');
         if (mounted) {
           setState(() {
             _loading = false;
@@ -91,7 +89,7 @@ class _HomePageLoaderState extends State<HomePageLoader> {
         }
       }
     } else {
-      print('No user is currently signed in'); // Debug print
+      debugPrint('No user is currently signed in'); // Debug print
       if (mounted) {
         setState(() {
           _loading = false;
@@ -99,7 +97,7 @@ class _HomePageLoaderState extends State<HomePageLoader> {
       }
     }
 
-    print('_fetchUsername completed. Loading: $_loading'); // Debug print
+    debugPrint('_fetchUsername completed. Loading: $_loading'); // Debug print
   }
 
   @override
@@ -107,7 +105,6 @@ class _HomePageLoaderState extends State<HomePageLoader> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (_loading) {
-      print('Still loading...'); // Debug print
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -115,7 +112,6 @@ class _HomePageLoaderState extends State<HomePageLoader> {
 
     // Check if the user is admin
     if (user != null && user.email == 'admin@gmail.com') {
-      print('Navigating to AdminHomePage'); // Debug print
       return const AdminHomePage();
     }
 
@@ -127,7 +123,6 @@ class _HomePageLoaderState extends State<HomePageLoader> {
       );
     }
 
-    print('Navigating to HomePage'); // Debug print
     return HomePage(
       userName: _userName,
       email: _email,

@@ -23,7 +23,7 @@ class RejectButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
       ),
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: Center(
           child: isLoading
