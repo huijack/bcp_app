@@ -100,14 +100,14 @@ class _MyBuildingState extends State<MyBuilding> {
         children: [
           if (overdueRequests.isNotEmpty) ...[
             Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.red[900],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Center(
                     child: Text(
                       'Overdue Requests',
@@ -124,14 +124,14 @@ class _MyBuildingState extends State<MyBuilding> {
           ],
           if (activeRequests.isNotEmpty) ...[
             Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.grey.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Center(
                     child: Text(
                       'Active Requests',
@@ -313,7 +313,7 @@ class _MyBuildingState extends State<MyBuilding> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
           ],
         );
       }).toList(),

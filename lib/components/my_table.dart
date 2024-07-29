@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class MyTable extends StatefulWidget {
-  const MyTable({Key? key}) : super(key: key);
+  const MyTable({super.key});
 
   @override
   _MyTableState createState() => _MyTableState();

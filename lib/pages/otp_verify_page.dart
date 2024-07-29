@@ -290,10 +290,10 @@ class _OTPVerifyState extends State<OTPVerifyPage> {
                       color: const Color.fromRGBO(191, 0, 6, 0.815),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: SizedBox(
+                    child: const SizedBox(
                       width: 20,
                       height: 20,
-                      child: const Center(
+                      child: Center(
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path/path.dart';
@@ -49,11 +50,11 @@ class _MyUploadImageState extends State<MyUploadImage> {
         if (widget.onImagePicked != null) {
           widget.onImagePicked!(_image);
         }
-
-        print('Image picked: ${_image?.path}');
+        
+        debugPrint('Image picked: ${_image?.path}');
       }
     } catch (e) {
-      print('Error picking image: $e');
+      debugPrint('Error picking image: $e');
     } finally {
       setState(() {
         _isImagePickerActive = false;

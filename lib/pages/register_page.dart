@@ -2,8 +2,6 @@ import 'dart:math';
 import 'package:bcp_app/components/my_button.dart';
 import 'package:bcp_app/components/my_textfield.dart';
 import 'package:bcp_app/pages/auth_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mailer/mailer.dart';

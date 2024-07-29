@@ -61,7 +61,7 @@ class MyCard extends StatelessWidget {
                 top: 8,
                 right: 8,
                 child: Container(
-                  padding: EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: Colors.red[900],
                     shape: BoxShape.circle,
@@ -70,18 +70,18 @@ class MyCard extends StatelessWidget {
                         color: Colors.black.withOpacity(0.1),
                         spreadRadius: 1,
                         blurRadius: 4,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  constraints: BoxConstraints(
+                  constraints: const BoxConstraints(
                     minWidth: 30,
                     minHeight: 30,
                   ),
                   child: Center(
                     child: Text(
                       requestCount.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

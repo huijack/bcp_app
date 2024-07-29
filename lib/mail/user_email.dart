@@ -1,7 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserEmail {
@@ -34,9 +33,9 @@ class UserEmail {
 
     try {
       final sendReport = await send(message, smtpServer);
-      print('Message sent: ' + sendReport.toString());
+      debugPrint('Message sent: $sendReport');
     } on MailerException catch (e) {
-      print('Message not sent. \n' + e.toString());
+      debugPrint('Message not: $e');
     }
   }
 }

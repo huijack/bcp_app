@@ -116,11 +116,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
           future: userDataFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || !snapshot.data!.exists) {
-              return Center(child: Text('No user data found'));
+              return const Center(child: Text('No user data found'));
             } else {
               populateControllers(snapshot.data!);
               return buildProfileForm();
@@ -146,7 +146,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   prefixIcon: Icons.person,
                   enabled: false,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 MyTextField(
                   controller: emailController,
                   hintText: 'Email',
@@ -154,42 +154,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   prefixIcon: Icons.email,
                   enabled: false,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 MyTextField(
                   controller: phoneController,
                   hintText: 'Phone',
                   obscureText: false,
                   prefixIcon: Icons.phone,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 MyTextField(
                   controller: addressController,
                   hintText: 'Address',
                   obscureText: false,
                   prefixIcon: Icons.home,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 MyTextField(
                   controller: postcodeController,
                   hintText: 'Postcode',
                   obscureText: false,
                   prefixIcon: Icons.location_on,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 MyTextField(
                   controller: cityController,
                   hintText: 'City',
                   obscureText: false,
                   prefixIcon: Icons.location_city,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 MyTextField(
                   controller: stateController,
                   hintText: 'State',
                   obscureText: false,
                   prefixIcon: Icons.location_history,
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 MyButton(
                   onTap: () => updateProfile(context),
                   buttonText: 'Update Profile',

@@ -5,10 +5,10 @@ class MySearchBar extends StatefulWidget {
   final void Function(String)? onChanged;
 
   const MySearchBar({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   _MySearchBarState createState() => _MySearchBarState();

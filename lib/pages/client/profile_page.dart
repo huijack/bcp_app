@@ -38,14 +38,14 @@ class _ProfilePageState extends State<ProfilePage>
         CircleAvatar(
           radius: 50,
           backgroundColor: Colors.red[900],
-          child: Icon(Icons.person, size: 50, color: Colors.white),
+          child: const Icon(Icons.person, size: 50, color: Colors.white),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Text(
           name,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(
           email,
           style: TextStyle(fontSize: 16, color: Colors.grey[600]),
@@ -62,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage>
       return Column(
         children: [
           _buildInfoCard(title, userData[title].toString(), icon),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
         ],
       );
     } else {
@@ -76,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage>
       color: Colors.white,
       child: ListTile(
         leading: Icon(icon, color: Colors.red[900]),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(value),
       ),
     );
@@ -106,7 +106,7 @@ class _ProfilePageState extends State<ProfilePage>
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
@@ -114,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage>
           }
 
           if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Center(child: Text('No user profile data found'));
+            return const Center(child: Text('No user profile data found'));
           }
 
           Map<String, dynamic> userData =
@@ -124,10 +124,10 @@ class _ProfilePageState extends State<ProfilePage>
 
           return Column(
             children: [
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               _buildProfileHeader(
                   userData['FullName'] ?? 'N/A', userData['Email'] ?? 'N/A'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Expanded(
                 child: Center(
                   child: !hasProfileData
